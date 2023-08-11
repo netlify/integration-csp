@@ -1,0 +1,15 @@
+{
+  "name": "csp-test",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "ntli build -a",
+    "dev": "ntli dev -a",
+    "preview": "ntli preview"
+  },
+  "dependencies": {
+    "@netlify/sdk": "link:../../../integration-sdk/packages/sdk",
+    "typescript": "^5.1.6"
+  }
+}

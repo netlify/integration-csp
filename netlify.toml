@@ -1,0 +1,14 @@
+[build]
+command="ntli build -a"
+functions=".ntli/site/netlify/functions"
+publish=".ntli/site/static"
+
+[[headers]]
+for="/ui/*"
+[headers.values]
+Access-Control-Allow-Origin="*"
+Access-Control-Allow-Headers="*"
+Access-Control-Allow-Methods="*"
+
+[functions]
+node_bundler = "esbuild"
