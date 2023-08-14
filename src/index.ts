@@ -30,7 +30,15 @@ integration.addBuildHook("onPreBuild", ({ buildContext, ...opts }) => {
 
   let inputs = buildContext.inputs;
   if (process.env.INCOMING_HOOK_BODY) {
+    console.log("Using temporary config from test build.");
     inputs = JSON.parse(process.env.INCOMING_HOOK_BODY);
+  } else {
+    console.log("Using stored CSP config.");
+  }
+
+  if (inputs) {
+    inputs.reportOnly = inputs.reportOnly === "true" ? true : false;
+    inputs.unsafeEval = inputs.unsafeEval === "true" ? true : false;
   }
 
   const newOpts = {
