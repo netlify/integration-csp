@@ -58,50 +58,40 @@ integration.addBuildContext(async ({ site_config }) => {
   return {};
 });
 
-integration.addHandler(
-  "get-config",
-  async ({ queryStringParameters }, { client }) => {
-    const { siteId } = queryStringParameters;
+integration.addHandler("get-config", async (_, { client, siteId }) => {
+  const { config, has_build_hook_enabled } = await client.getSiteIntegration(
+    siteId
+  );
 
-    const { config, has_build_hook_enabled } = await client.getSiteIntegration(
-      siteId
-    );
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      has_build_hook_enabled,
+      cspConfig: config.cspConfig ?? {},
+    }),
+  };
+});
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        has_build_hook_enabled,
-        cspConfig: config.cspConfig ?? {},
-      }),
-    };
-  }
-);
+integration.addHandler("save-config", async ({ body }, { client, siteId }) => {
+  console.log(`Saving config for ${siteId}.`);
 
-integration.addHandler(
-  "save-config",
-  async ({ body, queryStringParameters }, { client }) => {
-    const { siteId } = queryStringParameters;
-    console.log(`Saving config for ${siteId}.`);
+  const config = JSON.parse(body) as SiteConfig["cspConfig"];
 
-    const config = JSON.parse(body) as SiteConfig["cspConfig"];
+  const existingConfig = await client.getSiteIntegration(siteId);
 
-    const existingConfig = await client.getSiteIntegration(siteId);
+  await client.updateSiteIntegration(siteId, {
+    ...existingConfig.config,
+    cspConfig: config,
+  });
 
-    await client.updateSiteIntegration(siteId, {
-      ...existingConfig.config,
-      cspConfig: config,
-    });
-
-    return {
-      statusCode: 200,
-    };
-  }
-);
+  return {
+    statusCode: 200,
+  };
+});
 
 integration.addHandler(
   "trigger-config-test",
-  async ({ queryStringParameters, body }, { client }) => {
-    const { siteId } = queryStringParameters;
+  async ({ body }, { client, siteId }) => {
     console.log(`Triggering build for ${siteId}.`);
     const {
       config: {
@@ -124,49 +114,51 @@ integration.addHandler(
   }
 );
 
-integration.addHandler("enable-build", async ({ body }, { client }) => {
-  const { siteId, teamId } = JSON.parse(body);
+integration.addHandler(
+  "enable-build",
+  async (_, { client, siteId, teamId }) => {
+    const { token } = await client.generateBuildToken(siteId);
+    await client.setBuildToken(teamId, siteId, token);
+    await client.enableBuildhook(siteId);
 
-  const { token } = await client.generateBuildToken(siteId);
-  await client.setBuildToken(teamId, siteId, token);
-  await client.enableBuildhook(siteId);
+    const { url, id } = await client.createBuildHook(siteId, {
+      title: "CSP Configuration Tests",
+      branch: "main",
+      draft: true,
+    });
 
-  const { url, id } = await client.createBuildHook(siteId, {
-    title: "CSP Configuration Tests",
-    branch: "main",
-    draft: true,
-  });
+    await client.updateSiteIntegration(siteId, {
+      buildHook: {
+        url,
+        id,
+      },
+    });
 
-  await client.updateSiteIntegration(siteId, {
-    buildHook: {
-      url,
-      id,
-    },
-  });
+    return {
+      statusCode: 200,
+    };
+  }
+);
 
-  return {
-    statusCode: 200,
-  };
-});
+integration.addHandler(
+  "disable-build",
+  async (_, { client, siteId, teamId }) => {
+    const {
+      config: {
+        buildHook: { id: buildHookId },
+      },
+    } = await client.getSiteIntegration(siteId);
 
-integration.addHandler("disable-build", async ({ body }, { client }) => {
-  const { siteId, teamId } = JSON.parse(body);
+    await client.disableBuildhook(siteId);
+    await client.removeBuildToken(teamId, siteId);
 
-  const {
-    config: {
-      buildHook: { id: buildHookId },
-    },
-  } = await client.getSiteIntegration(siteId);
+    await client.deleteBuildHook(siteId, buildHookId);
 
-  await client.disableBuildhook(siteId);
-  await client.removeBuildToken(teamId, siteId);
-
-  await client.deleteBuildHook(siteId, buildHookId);
-
-  return {
-    statusCode: 200,
-  };
-});
+    return {
+      statusCode: 200,
+    };
+  }
+);
 
 integration.onDisable(async ({ queryStringParameters }, { client }) => {
   const { siteId, teamId } = queryStringParameters;

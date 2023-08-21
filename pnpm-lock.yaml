@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@netlify/sdk':
-    specifier: ^0.6.1
-    version: 0.6.1(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
+    specifier: ^0.7.9
+    version: 0.7.9(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
@@ -2084,8 +2084,8 @@ packages:
       chance: 1.1.11
     dev: false
 
-  /@netlify/sdk@0.6.1(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
-    resolution: {integrity: sha512-rc0h2IXwAOMF77c+qi/Be67ccG2G7Z42WRl2CV8og94x1ybAhuSmJdVopDmG0SEFpFsbbuIAx153aqASc78muA==}
+  /@netlify/sdk@0.7.9(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
+    resolution: {integrity: sha512-w2yF1IMN+znAxOZTCMhrURNLg8dLFCE4Hqk5aS9SNaHoG4wE4zZbonEI/E2NhgYCTExvuiQg1oTLrRLiwVK/Rg==}
     hasBin: true
     dependencies:
       '@netlify/functions': 1.6.0
@@ -2094,7 +2094,7 @@ packages:
       camelcase: 7.0.1
       chalk: 5.3.0
       commander: 10.0.1
-      content-engine: 0.0.7(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)(webpack@5.88.2)
+      content-engine: 0.0.13(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)(webpack@5.88.2)
       esbuild: 0.17.19
       esbuild-plugin-copy: 2.1.1(esbuild@0.17.19)
       fs-extra: 11.1.1
@@ -2102,6 +2102,7 @@ packages:
       node-fetch: 3.3.2
       open: 9.1.0
       outdent: 0.8.0
+      toml: 3.0.0
       typescript: 5.1.6
       wretch: 2.6.0
       zod: 3.21.4
@@ -3581,8 +3582,8 @@ packages:
       safe-buffer: 5.2.1
     dev: false
 
-  /content-engine@0.0.7(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)(webpack@5.88.2):
-    resolution: {integrity: sha512-ES5gjJgs3mWbkUCHAqKETna/U+otxyq3LHjWEJaXWkFRtws+oMWjpk14oVNEIqvVUNEv3ujZhe5HlkeIOlHOMA==}
+  /content-engine@0.0.13(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(typescript@5.1.6)(webpack@5.88.2):
+    resolution: {integrity: sha512-T3lByVwfoRe6HfBtJsEntN7JNUIBEM5iuNxzjKBNC5AGsck6Xo7K5V8HxSPNUTYEpfwmlVWwWDK9myysVbCJnA==}
     engines: {node: '>=18.0.0'}
     requiresBuild: true
     peerDependencies:
@@ -8136,6 +8137,10 @@ packages:
     dependencies:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
+    dev: false
+
+  /toml@3.0.0:
+    resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
     dev: false
 
   /tr46@0.0.3:
