@@ -169,8 +169,12 @@ integration.onDisable(async ({ queryStringParameters }, { client }) => {
     },
   } = await client.getSiteIntegration(siteId);
 
-  await client.disableBuildhook(siteId);
-  await client.removeBuildToken(teamId, siteId);
+  try {
+    await client.disableBuildhook(siteId);
+    await client.removeBuildToken(teamId, siteId);
+  } catch {
+    console.log("Build hooks already disabled");
+  }
 
   await client.deleteBuildHook(siteId, buildHookId);
   return {
