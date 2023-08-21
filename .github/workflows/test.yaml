@@ -1,6 +1,8 @@
 on:
   workflow_dispatch:
-concurrency: blah
+concurrency:
+  group: blah
+  cancel-in-progress: true
 
 jobs:
   build:
