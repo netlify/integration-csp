@@ -7,20 +7,8 @@ const surface = integrationUI.addSurface("integrations-settings");
 const root = surface.addRoute("/");
 
 root.onLoad(
-  async ({
-    picker,
-    surfaceInputsData,
-    surfaceRouteConfig,
-    integrationContext: { serverUrl, netlifyToken, siteId },
-  }) => {
-    const res = await fetch(
-      `${serverUrl}/.netlify/functions/handler/get-config?siteId=${siteId}`,
-      {
-        headers: {
-          "netlify-token": netlifyToken,
-        },
-      }
-    );
+  async ({ picker, surfaceInputsData, surfaceRouteConfig, fetch }) => {
+    const res = await fetch(`get-config`);
 
     const { has_build_hook_enabled, cspConfig } = await res.json();
 
@@ -61,24 +49,10 @@ root.addCard(
     card.addButton({
       id: "enable-build-hooks",
       title: "Enable",
-      callback: async ({
-        picker,
-        integrationContext: { serverUrl, netlifyToken, accountId, siteId },
-      }) => {
-        const res = await fetch(
-          `${serverUrl}/.netlify/functions/handler/enable-build`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "netlify-token": netlifyToken,
-            },
-            body: JSON.stringify({
-              siteId,
-              teamId: accountId,
-            }),
-          }
-        );
+      callback: async ({ picker, fetch }) => {
+        const res = await fetch(`enable-build`, {
+          method: "POST",
+        });
 
         if (res.ok) {
           picker.getElementById("enable-build-hooks").display = "hidden";
@@ -91,24 +65,10 @@ root.addCard(
       id: "disable-build-hooks",
       title: "Disable",
       display: "hidden",
-      callback: async ({
-        picker,
-        integrationContext: { serverUrl, netlifyToken, accountId, siteId },
-      }) => {
-        const res = await fetch(
-          `${serverUrl}/.netlify/functions/handler/disable-build`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "netlify-token": netlifyToken,
-            },
-            body: JSON.stringify({
-              siteId,
-              teamId: accountId,
-            }),
-          }
-        );
+      callback: async ({ picker, fetch }) => {
+        const res = await fetch(`disable-build`, {
+          method: "POST",
+        });
 
         if (res.ok) {
           picker.getElementById("enable-build-hooks").display = "visible";
@@ -123,7 +83,7 @@ root.addForm(
   {
     id: "csp-configuration",
     title: "CSP Configuration",
-    onSubmit: async ({ surfaceInputsData, integrationContext }) => {
+    onSubmit: async ({ surfaceInputsData, fetch }) => {
       const {
         "csp-configuration_reportOnly": reportOnly = "true",
         "csp-configuration_reportUri": reportUri = "",
@@ -140,18 +100,10 @@ root.addForm(
         excludedPath,
       };
 
-      const { netlifyToken, serverUrl, siteId } = integrationContext;
-      await fetch(
-        `${serverUrl}/.netlify/functions/handler/save-config?siteId=${siteId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "netlify-token": netlifyToken,
-          },
-          body: JSON.stringify(config),
-        }
-      );
+      await fetch(`save-config`, {
+        method: "POST",
+        body: JSON.stringify(config),
+      });
     },
   },
   (form) => {
@@ -187,6 +139,7 @@ root.addForm(
     form.addInputText({
       id: "path",
       label: "Path",
+      fieldType: "textarea" as any,
       helpText:
         "The glob expressions of path(s) that should invoke the CSP nonce edge function. Can be a string or array of strings.",
     });
@@ -194,6 +147,7 @@ root.addForm(
     form.addInputText({
       id: "excludedPath",
       label: "Excluded Path",
+      fieldType: "textarea" as any,
       helpText:
         "The glob expressions of path(s) that *should not* invoke the CSP nonce edge function. Must be an array of strings. This value gets spread with common non-html filetype extensions (*.css, *.js, *.svg, etc)",
     });
@@ -206,7 +160,7 @@ root.addForm(
     form.addButton({
       id: "test",
       title: "Test",
-      callback: async ({ surfaceInputsData, integrationContext }) => {
+      callback: async ({ surfaceInputsData, fetch }) => {
         const {
           "csp-configuration_reportOnly": reportOnly,
           "csp-configuration_reportUri": reportUri,
@@ -223,18 +177,10 @@ root.addForm(
           excludedPath,
         };
 
-        const { netlifyToken, serverUrl, siteId } = integrationContext;
-        await fetch(
-          `${serverUrl}/.netlify/functions/handler/trigger-config-test?siteId=${siteId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "netlify-token": netlifyToken,
-            },
-            body: JSON.stringify(config),
-          }
-        );
+        await fetch(`trigger-config-test`, {
+          method: "POST",
+          body: JSON.stringify(config),
+        });
       },
     });
 
