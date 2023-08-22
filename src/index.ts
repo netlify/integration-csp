@@ -3,7 +3,7 @@ import { NetlifyIntegration } from "@netlify/sdk";
 import { onPreBuild } from "./hooks";
 
 type SiteConfig = {
-  buildHook: {
+  buildHook?: {
     url: string;
     id: string;
   };
@@ -164,19 +164,23 @@ integration.onDisable(async ({ queryStringParameters }, { client }) => {
   const { siteId, teamId } = queryStringParameters;
 
   const {
-    config: {
-      buildHook: { id: buildHookId },
-    },
+    config: { buildHook },
   } = await client.getSiteIntegration(siteId);
 
   try {
-    await client.disableBuildhook(siteId);
-    await client.removeBuildToken(teamId, siteId);
-  } catch {
-    console.log("Build hooks already disabled");
+    const { id: buildHookId } = buildHook ?? {};
+
+    if (buildHookId) {
+      await client.disableBuildhook(siteId);
+      await client.removeBuildToken(teamId, siteId);
+
+      await client.deleteBuildHook(siteId, buildHookId);
+    }
+  } catch (e) {
+    console.log("Failed to disable buildhooks");
+    console.error(e);
   }
 
-  await client.deleteBuildHook(siteId, buildHookId);
   return {
     statusCode: 200,
   };
