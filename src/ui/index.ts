@@ -1,6 +1,6 @@
 import { NetlifyIntegrationUI } from "@netlify/sdk";
 
-const integrationUI = new NetlifyIntegrationUI("csp-test");
+const integrationUI = new NetlifyIntegrationUI("dynamic-csp");
 
 const surface = integrationUI.addSurface("integrations-settings");
 
@@ -24,9 +24,9 @@ root.onLoad(
       cspConfig.reportUri ?? "";
     surfaceInputsData["csp-configuration_unsafeEval"] =
       cspConfig.unsafeEval ?? "true";
-    surfaceInputsData["csp-configuration_path"] = cspConfig.path ?? "/*";
+    surfaceInputsData["csp-configuration_path"] = cspConfig.path ?? "";
     surfaceInputsData["csp-configuration_excludedPath"] =
-      cspConfig.excludedPath ?? "[]";
+      cspConfig.excludedPath ?? "";
 
     return {
       surfaceInputsData,
@@ -38,13 +38,19 @@ root.onLoad(
 root.addCard(
   {
     id: "enable-build-hooks-card",
-    title: "Enable CSP",
+    title: "Dynamic Content Security Policy",
   },
   (card) => {
     card.addText({
       value:
-        "You can toggle the CSP injection here. Enabling/Disabling this will only affect future builds, and does not trigger one.",
+        "Enabling or disabling this integration affects the Content-Security-Policy header of future deploys.",
     });
+
+    card.addLink({
+      text: 'Learn more in the integration readme',
+      href: 'https://github.com/netlify/integration-csp',
+      target: '_blank',
+    })
 
     card.addButton({
       id: "enable-build-hooks",
@@ -82,7 +88,7 @@ root.addCard(
 root.addForm(
   {
     id: "csp-configuration",
-    title: "CSP Configuration",
+    title: "Configuration",
     onSubmit: async ({ surfaceInputsData, fetch }) => {
       const {
         "csp-configuration_reportOnly": reportOnly = "true",
@@ -96,8 +102,10 @@ root.addForm(
         reportOnly,
         reportUri,
         unsafeEval,
-        path,
-        excludedPath,
+        // @ts-expect-error
+        path: JSON.stringify(path.split('\n')),
+        // @ts-expect-error
+        excludedPath: JSON.stringify(excludedPath.split('\n')),
       };
 
       await fetch(`save-config`, {
@@ -111,7 +119,7 @@ root.addForm(
       id: "reportOnly",
       label: "Report Only",
       helpText:
-        "When true, uses the Content-Security-Policy-Report-Only header instead of the Content-Security-Policy header.",
+        "When true, the Content-Security-Policy-Report-Only header is used instead of the Content-Security-Policy header.",
       options: [
         { value: "true", label: "True" },
         { value: "false", label: "False" },
@@ -122,14 +130,14 @@ root.addForm(
       id: "reportUri",
       label: "Report URI",
       helpText:
-        "The relative or absolute URL to report any violations. If not defined, violations are reported to the __csp-violations function, which this plugin deploys.",
+        "The relative or absolute URL to report any violations. If not defined, violations are reported to the __csp-violations function, which is deployed by this integration.",
     });
 
     form.addInputSelect({
       id: "unsafeEval",
       label: "Unsafe Eval",
       helpText:
-        "When true, adds 'unsafe-eval' to CSP for easier adoption. Set to false to have a safer policy if your code and code dependencies does not use eval().",
+        "When true, adds the 'unsafe-eval' source to the CSP for easier adoption. Set to false to have a safer policy if your code and code dependencies do not use eval().",
       options: [
         { value: "true", label: "True" },
         { value: "false", label: "False" },
@@ -141,7 +149,7 @@ root.addForm(
       label: "Path",
       fieldType: "textarea" as any,
       helpText:
-        "The glob expressions of path(s) that should invoke the CSP nonce edge function. Can be a string or array of strings.",
+        "The glob expressions of path(s) that should invoke the integration's edge function, separated by newlines.",
     });
 
     form.addInputText({
@@ -149,17 +157,17 @@ root.addForm(
       label: "Excluded Path",
       fieldType: "textarea" as any,
       helpText:
-        "The glob expressions of path(s) that *should not* invoke the CSP nonce edge function. Must be an array of strings. This value gets spread with common non-html filetype extensions (*.css, *.js, *.svg, etc)",
+        "The glob expressions of path(s) that *should not* invoke the integration's edge function, separated by newlines. Common non-html filetype extensions (*.css, *.js, *.svg, etc) are already excluded.",
     });
 
     form.addText({
       value:
-        "You can create a draft deploy, with the above configuration values, to test your CSP policy. This will not be published to production.",
+        "Test your configuration on a draft Deploy Preview to inspect your CSP before going live. This deploy will not publish to production.",
     });
 
     form.addButton({
       id: "test",
-      title: "Test",
+      title: "Test on Deploy Preview",
       callback: async ({ surfaceInputsData, fetch }) => {
         const {
           "csp-configuration_reportOnly": reportOnly,
@@ -186,7 +194,7 @@ root.addForm(
 
     form.addText({
       value:
-        "Saving your changes will not trigger a new build. To have the changes take effect, you must trigger a new build.",
+        "After saving, your configuration will apply to future deploys.",
     });
   }
 );
