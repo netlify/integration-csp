@@ -24,9 +24,10 @@ root.onLoad(
       cspConfig.reportUri ?? "";
     surfaceInputsData["csp-configuration_unsafeEval"] =
       cspConfig.unsafeEval ?? "true";
-    surfaceInputsData["csp-configuration_path"] = cspConfig.path ?? "";
+    surfaceInputsData["csp-configuration_path"] =
+      cspConfig.path.join("\n") ?? "";
     surfaceInputsData["csp-configuration_excludedPath"] =
-      cspConfig.excludedPath ?? "";
+      cspConfig.excludedPath.join("\n") ?? "";
 
     return {
       surfaceInputsData,
@@ -47,10 +48,10 @@ root.addCard(
     });
 
     card.addLink({
-      text: 'Learn more in the integration readme',
-      href: 'https://github.com/netlify/integration-csp',
-      target: '_blank',
-    })
+      text: "Learn more in the integration readme",
+      href: "https://github.com/netlify/integration-csp",
+      target: "_blank",
+    });
 
     card.addButton({
       id: "enable-build-hooks",
@@ -103,9 +104,9 @@ root.addForm(
         reportUri,
         unsafeEval,
         // @ts-expect-error
-        path: JSON.stringify(path.split('\n')),
+        path: path.split("\n"),
         // @ts-expect-error
-        excludedPath: JSON.stringify(excludedPath.split('\n')),
+        excludedPath: excludedPath.split("\n"),
       };
 
       await fetch(`save-config`, {
@@ -147,7 +148,7 @@ root.addForm(
     form.addInputText({
       id: "path",
       label: "Path",
-      fieldType: "textarea" as any,
+      fieldType: "textarea",
       helpText:
         "The glob expressions of path(s) that should invoke the integration's edge function, separated by newlines.",
     });
@@ -155,7 +156,7 @@ root.addForm(
     form.addInputText({
       id: "excludedPath",
       label: "Excluded Path",
-      fieldType: "textarea" as any,
+      fieldType: "textarea",
       helpText:
         "The glob expressions of path(s) that *should not* invoke the integration's edge function, separated by newlines. Common non-html filetype extensions (*.css, *.js, *.svg, etc) are already excluded.",
     });
@@ -193,8 +194,7 @@ root.addForm(
     });
 
     form.addText({
-      value:
-        "After saving, your configuration will apply to future deploys.",
+      value: "After saving, your configuration will apply to future deploys.",
     });
   }
 );

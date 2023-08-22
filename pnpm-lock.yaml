@@ -1,16 +1,13 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@netlify/plugin-csp-nonce':
-    specifier: ^1.2.1
-    version: 1.2.1
   '@netlify/sdk':
-    specifier: ^0.7.9
-    version: 0.7.9(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
+    specifier: ^0.7.11
+    version: 0.7.11(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
@@ -2087,12 +2084,8 @@ packages:
       chance: 1.1.11
     dev: false
 
-  /@netlify/plugin-csp-nonce@1.2.1:
-    resolution: {integrity: sha512-jz3HzCancUgD220v2ePXHRMXiIDQtpYnKzL6SXqhBI/CZgvrJ1i+0U4LfExGYniw5+hkLFM1nH+4LpgQnYJKQw==}
-    dev: false
-
-  /@netlify/sdk@0.7.9(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
-    resolution: {integrity: sha512-w2yF1IMN+znAxOZTCMhrURNLg8dLFCE4Hqk5aS9SNaHoG4wE4zZbonEI/E2NhgYCTExvuiQg1oTLrRLiwVK/Rg==}
+  /@netlify/sdk@0.7.11(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
+    resolution: {integrity: sha512-cUhqZ2gOSbCmaf9P7iYvWnUwgRTbm4o+NY5qFJq7S7FBkED6rGNpC8VYsaG6pH7WKVNZUBE5PYqMRL8+73cJLw==}
     hasBin: true
     dependencies:
       '@netlify/functions': 1.6.0
