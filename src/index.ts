@@ -11,8 +11,8 @@ type SiteConfig = {
     reportOnly: boolean;
     reportUri: string;
     unsafeEval: boolean;
-    path: string;
-    excludedPath: string;
+    path: string | string[];
+    excludedPath: string[];
   };
 };
 
