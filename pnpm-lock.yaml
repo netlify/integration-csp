@@ -1,10 +1,13 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@netlify/plugin-csp-nonce':
+    specifier: ^1.2.1
+    version: 1.2.1
   '@netlify/sdk':
     specifier: ^0.7.9
     version: 0.7.9(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
@@ -2082,6 +2085,10 @@ packages:
       '@netlify/functions': 1.6.0
       '@types/chance': 1.1.3
       chance: 1.1.11
+    dev: false
+
+  /@netlify/plugin-csp-nonce@1.2.1:
+    resolution: {integrity: sha512-jz3HzCancUgD220v2ePXHRMXiIDQtpYnKzL6SXqhBI/CZgvrJ1i+0U4LfExGYniw5+hkLFM1nH+4LpgQnYJKQw==}
     dev: false
 
   /@netlify/sdk@0.7.9(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
