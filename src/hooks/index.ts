@@ -20,12 +20,14 @@ export const onPreBuild = async ({ inputs, netlifyConfig, utils }) => {
   }
 
   const edgeFunctionsDir = build.edge_functions || "./netlify/edge-functions";
-  fs.writeFileSync(`${edgeFunctionsDir}/__csp-nonce-inputs.json`, config);
   // make the directory in case it actually doesn't exist yet
   await utils.run.command(`mkdir -p ${edgeFunctionsDir}`);
+
+  fs.writeFileSync(`${edgeFunctionsDir}/__csp-nonce-inputs.json`, config);
   console.log(`  Writing nonce edge function to ${edgeFunctionsDir}...`);
-  const nonceSource = 'node_modules/@netlify/plugin-csp-nonce/src/__csp-nonce.ts'
-  const nonceDest = `${edgeFunctionsDir}/__csp-nonce.ts`
+  const nonceSource =
+    "node_modules/@netlify/plugin-csp-nonce/src/__csp-nonce.ts";
+  const nonceDest = `${edgeFunctionsDir}/__csp-nonce.ts`;
   fs.copyFileSync(nonceSource, nonceDest);
 
   // if no reportUri in config input, deploy function on site's behalf
@@ -34,8 +36,9 @@ export const onPreBuild = async ({ inputs, netlifyConfig, utils }) => {
     // make the directory in case it actually doesn't exist yet
     await utils.run.command(`mkdir -p ${functionsDir}`);
     console.log(`  Writing violations logging function to ${functionsDir}...`);
-    const violationsSource = 'node_modules/@netlify/plugin-csp-nonce/src/__csp-violations.ts'
-    const violationsDest = `${functionsDir}/__csp-violations.ts`
+    const violationsSource =
+      "node_modules/@netlify/plugin-csp-nonce/src/__csp-violations.ts";
+    const violationsDest = `${functionsDir}/__csp-violations.ts`;
     fs.copyFileSync(violationsSource, violationsDest);
   } else {
     console.log(`  Using ${inputs.reportUri} as report-uri directive...`);
