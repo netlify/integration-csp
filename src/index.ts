@@ -27,8 +27,8 @@ integration.addBuildHook("onPreBuild", ({ buildContext, ...opts }) => {
   // 1. Incoming hook body
   // 2. Build context
   // 3. Plugin options - realistically won't ever be called in this context
+  let { inputs } = buildContext ?? opts ?? {};
 
-  let inputs = buildContext.inputs;
   if (process.env.INCOMING_HOOK_BODY) {
     console.log("Using temporary config from test build.");
     inputs = JSON.parse(process.env.INCOMING_HOOK_BODY);
