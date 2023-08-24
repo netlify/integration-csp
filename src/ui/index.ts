@@ -18,6 +18,10 @@ root.onLoad(
     picker.getElementById("disable-build-hooks").display =
       has_build_hook_enabled ? "visible" : "hidden";
 
+    picker.getElementById("csp-configuration").display = has_build_hook_enabled
+      ? "visible"
+      : "hidden";
+
     surfaceInputsData["csp-configuration_reportOnly"] =
       cspConfig.reportOnly ?? "true";
     surfaceInputsData["csp-configuration_reportUri"] =
@@ -121,6 +125,7 @@ root.addForm(
   {
     id: "csp-configuration",
     title: "Configuration",
+    display: "hidden",
     onSubmit: async ({ surfaceInputsData, fetch }) => {
       const config = mapConfig(surfaceInputsData);
 
