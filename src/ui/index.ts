@@ -22,12 +22,20 @@ root.onLoad(
       ? "visible"
       : "hidden";
 
-    surfaceInputsData["csp-configuration_reportOnly"] =
-      cspConfig.reportOnly ?? "true";
+    const reportOnly =
+      typeof cspConfig.reportOnly !== "undefined"
+        ? cspConfig.reportOnly.toString()
+        : "true";
+
+    const unsafeEval =
+      typeof cspConfig.unsafeEval !== "undefined"
+        ? cspConfig.unsafeEval.toString()
+        : "true";
+
+    surfaceInputsData["csp-configuration_reportOnly"] = reportOnly;
     surfaceInputsData["csp-configuration_reportUri"] =
       cspConfig.reportUri ?? "";
-    surfaceInputsData["csp-configuration_unsafeEval"] =
-      cspConfig.unsafeEval ?? "true";
+    surfaceInputsData["csp-configuration_unsafeEval"] = unsafeEval;
     surfaceInputsData["csp-configuration_path"] =
       cspConfig.path?.join("\n") ?? "";
     surfaceInputsData["csp-configuration_excludedPath"] =
