@@ -99,6 +99,8 @@ root.addCard(
         if (res.ok) {
           picker.getElementById("enable-build-hooks").display = "hidden";
           picker.getElementById("disable-build-hooks").display = "visible";
+
+          picker.getElementById("csp-configuration").display = "visible";
         }
       },
     });
@@ -115,6 +117,8 @@ root.addCard(
         if (res.ok) {
           picker.getElementById("enable-build-hooks").display = "visible";
           picker.getElementById("disable-build-hooks").display = "hidden";
+
+          picker.getElementById("csp-configuration").display = "hidden";
         }
       },
     });
