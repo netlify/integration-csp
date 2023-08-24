@@ -41,8 +41,6 @@ root.onLoad(
     surfaceInputsData["csp-configuration_excludedPath"] =
       cspConfig.excludedPath?.join("\n") ?? "";
 
-    console.log({ reportOnly, surfaceInputsData, unsafeEval, cspConfig });
-
     return {
       surfaceInputsData,
       surfaceRouteConfig,
