@@ -58,17 +58,19 @@ integration.addBuildEventHandler(
         console.log(e);
       }
     } else {
-      console.log("Using stored CSP config.");
-    }
-
-    if (!config) {
-      config = {
-        reportOnly: true,
-        reportUri: "",
-        unsafeEval: true,
-        path: ["/*"],
-        excludedPath: [],
-      };
+      if (!config) {
+        console.log();
+        config = {
+          reportOnly: true,
+          reportUri: "",
+          unsafeEval: true,
+          path: ["/*"],
+          excludedPath: [],
+        };
+        console.log("Using default CSP config.");
+      } else {
+        console.log("Using stored CSP config.");
+      }
     }
 
     const newOpts = {
