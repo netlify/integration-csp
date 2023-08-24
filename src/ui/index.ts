@@ -18,15 +18,20 @@ root.onLoad(
     picker.getElementById("disable-build-hooks").display =
       has_build_hook_enabled ? "visible" : "hidden";
 
+    picker.getElementById("csp-configuration").display = has_build_hook_enabled
+      ? "visible"
+      : "hidden";
+
     surfaceInputsData["csp-configuration_reportOnly"] =
       cspConfig.reportOnly ?? "true";
     surfaceInputsData["csp-configuration_reportUri"] =
       cspConfig.reportUri ?? "";
     surfaceInputsData["csp-configuration_unsafeEval"] =
       cspConfig.unsafeEval ?? "true";
-    surfaceInputsData["csp-configuration_path"] = cspConfig.path ?? "";
+    surfaceInputsData["csp-configuration_path"] =
+      cspConfig.path?.join("\n") ?? "";
     surfaceInputsData["csp-configuration_excludedPath"] =
-      cspConfig.excludedPath ?? "";
+      cspConfig.excludedPath?.join("\n") ?? "";
 
     return {
       surfaceInputsData,
@@ -34,6 +39,40 @@ root.onLoad(
     };
   }
 );
+
+const mapConfig = (surfaceInputsData: Record<string, string | string[]>) => {
+  const {
+    "csp-configuration_reportOnly": configReportOnly = "true",
+    "csp-configuration_reportUri": reportUri = "",
+    "csp-configuration_unsafeEval": configUnsafeEval = "true",
+    "csp-configuration_path": configPath = "/*",
+    "csp-configuration_excludedPath": configExcludedPath = "",
+  } = surfaceInputsData;
+
+  if (
+    typeof configPath !== "string" ||
+    typeof configExcludedPath !== "string"
+  ) {
+    throw new Error("Invalid config");
+  }
+
+  const path = configPath === "" ? [] : configPath.split("\n");
+  const excludedPath =
+    configExcludedPath === "" ? [] : configExcludedPath.split("\n");
+
+  const reportOnly = configReportOnly === "true";
+  const unsafeEval = configUnsafeEval === "true";
+
+  const config = {
+    reportOnly,
+    reportUri,
+    unsafeEval,
+    path: path,
+    excludedPath,
+  };
+
+  return config;
+};
 
 root.addCard(
   {
@@ -47,10 +86,11 @@ root.addCard(
     });
 
     card.addLink({
-      text: 'Learn more in the integration readme',
-      href: 'https://github.com/netlify/integration-csp',
-      target: '_blank',
-    })
+      text: "Learn more in the integration readme",
+      href: "https://github.com/netlify/integration-csp",
+      target: "_blank",
+      block: true,
+    });
 
     card.addButton({
       id: "enable-build-hooks",
@@ -63,6 +103,8 @@ root.addCard(
         if (res.ok) {
           picker.getElementById("enable-build-hooks").display = "hidden";
           picker.getElementById("disable-build-hooks").display = "visible";
+
+          picker.getElementById("csp-configuration").display = "visible";
         }
       },
     });
@@ -79,6 +121,8 @@ root.addCard(
         if (res.ok) {
           picker.getElementById("enable-build-hooks").display = "visible";
           picker.getElementById("disable-build-hooks").display = "hidden";
+
+          picker.getElementById("csp-configuration").display = "hidden";
         }
       },
     });
@@ -89,24 +133,9 @@ root.addForm(
   {
     id: "csp-configuration",
     title: "Configuration",
+    display: "hidden",
     onSubmit: async ({ surfaceInputsData, fetch }) => {
-      const {
-        "csp-configuration_reportOnly": reportOnly = "true",
-        "csp-configuration_reportUri": reportUri = "",
-        "csp-configuration_unsafeEval": unsafeEval = "true",
-        "csp-configuration_path": path = "/*",
-        "csp-configuration_excludedPath": excludedPath = "[]",
-      } = surfaceInputsData;
-
-      const config = {
-        reportOnly,
-        reportUri,
-        unsafeEval,
-        // @ts-expect-error
-        path: JSON.stringify(path.split('\n')),
-        // @ts-expect-error
-        excludedPath: JSON.stringify(excludedPath.split('\n')),
-      };
+      const config = mapConfig(surfaceInputsData);
 
       await fetch(`save-config`, {
         method: "POST",
@@ -147,7 +176,7 @@ root.addForm(
     form.addInputText({
       id: "path",
       label: "Path",
-      fieldType: "textarea" as any,
+      fieldType: "textarea",
       helpText:
         "The glob expressions of path(s) that should invoke the integration's edge function, separated by newlines.",
     });
@@ -155,7 +184,7 @@ root.addForm(
     form.addInputText({
       id: "excludedPath",
       label: "Excluded Path",
-      fieldType: "textarea" as any,
+      fieldType: "textarea",
       helpText:
         "The glob expressions of path(s) that *should not* invoke the integration's edge function, separated by newlines. Common non-html filetype extensions (*.css, *.js, *.svg, etc) are already excluded.",
     });
@@ -169,21 +198,7 @@ root.addForm(
       id: "test",
       title: "Test on Deploy Preview",
       callback: async ({ surfaceInputsData, fetch }) => {
-        const {
-          "csp-configuration_reportOnly": reportOnly,
-          "csp-configuration_reportUri": reportUri,
-          "csp-configuration_unsafeEval": unsafeEval,
-          "csp-configuration_path": path,
-          "csp-configuration_excludedPath": excludedPath,
-        } = surfaceInputsData;
-
-        const config = {
-          reportOnly,
-          reportUri,
-          unsafeEval,
-          path,
-          excludedPath,
-        };
+        const config = mapConfig(surfaceInputsData);
 
         await fetch(`trigger-config-test`, {
           method: "POST",
@@ -193,8 +208,7 @@ root.addForm(
     });
 
     form.addText({
-      value:
-        "After saving, your configuration will apply to future deploys.",
+      value: "After saving, your configuration will apply to future deploys.",
     });
   }
 );

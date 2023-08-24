@@ -1,61 +1,97 @@
 // Documentation: https://github.com/netlify/sdk
-import { NetlifyIntegration } from "@netlify/sdk";
+import { NetlifyIntegration, z } from "@netlify/sdk";
 import { onPreBuild } from "./hooks";
 
-type SiteConfig = {
-  buildHook?: {
-    url: string;
-    id: string;
-  };
-  cspConfig?: {
-    reportOnly: boolean;
-    reportUri: string;
-    unsafeEval: boolean;
-    path: string | string[];
-    excludedPath: string[];
-  };
-};
-
-type BuildContext = {
-  inputs?: SiteConfig["cspConfig"];
-};
-
-const integration = new NetlifyIntegration<SiteConfig, any, BuildContext>();
-
-integration.addBuildHook("onPreBuild", ({ buildContext, ...opts }) => {
-  // We lean on this favoured order of precedence:
-  // 1. Incoming hook body
-  // 2. Build context
-  // 3. Plugin options - realistically won't ever be called in this context
-  let { inputs } = buildContext ?? opts ?? {};
-
-  if (process.env.INCOMING_HOOK_BODY) {
-    console.log("Using temporary config from test build.");
-    inputs = JSON.parse(process.env.INCOMING_HOOK_BODY);
-  } else {
-    console.log("Using stored CSP config.");
-  }
-
-  if (inputs) {
-    inputs.reportOnly = inputs.reportOnly === "true" ? true : false;
-    inputs.unsafeEval = inputs.unsafeEval === "true" ? true : false;
-  }
-
-  const newOpts = {
-    ...opts,
-    inputs,
-  };
-
-  return onPreBuild(newOpts);
+const siteConfigSchema = z.object({
+  buildHook: z
+    .object({
+      url: z.string(),
+      id: z.string(),
+    })
+    .optional(),
+  cspConfig: z
+    .object({
+      reportOnly: z.boolean(),
+      reportUri: z.string(),
+      unsafeEval: z.boolean(),
+      path: z.string().array(),
+      excludedPath: z.string().array(),
+    })
+    .optional(),
 });
 
-integration.addBuildContext(async ({ site_config }) => {
+const buildConfigSchema = z.object({
+  reportOnly: z.boolean().optional(),
+  reportUri: z.string().optional(),
+  unsafeEval: z.boolean().optional(),
+  path: z.string().array().optional(),
+  excludedPath: z.string().array().optional(),
+});
+
+const buildContextSchema = z.object({
+  config: siteConfigSchema.shape.cspConfig,
+});
+
+const integration = new NetlifyIntegration({
+  siteConfigSchema,
+  buildConfigSchema,
+  buildContextSchema,
+});
+
+integration.addBuildEventHandler(
+  "onPreBuild",
+  ({ buildContext, netlifyConfig, utils, ...opts }) => {
+    // We lean on this favoured order of precedence:
+    // 1. Incoming hook body
+    // 2. Build context
+    // 3. Plugin options - realistically won't ever be called in this context
+
+    let { config } = buildContext ?? opts ?? {};
+
+    if (process.env.INCOMING_HOOK_BODY) {
+      console.log("Using temporary config from test build.");
+      try {
+        const hookBody = JSON.parse(process.env.INCOMING_HOOK_BODY);
+        config = integration._buildConfigurationSchema.parse(hookBody);
+      } catch (e) {
+        console.warn("Failed to parse incoming hook body.");
+        console.log(e);
+      }
+    } else {
+      if (!config) {
+        console.log();
+        config = {
+          reportOnly: true,
+          reportUri: "",
+          unsafeEval: true,
+          path: ["/*"],
+          excludedPath: [],
+        };
+        console.log("Using default CSP config.");
+      } else {
+        console.log("Using stored CSP config.");
+      }
+    }
+
+    const newOpts = {
+      ...opts,
+      netlifyConfig,
+      utils,
+      config,
+    };
+
+    return onPreBuild(newOpts);
+  }
+);
+
+integration.addBuildEventContext(async ({ site_config }) => {
   if (site_config.cspConfig) {
     return {
-      inputs: site_config.cspConfig,
+      config: site_config.cspConfig,
     };
   }
-  return {};
+
+  return undefined;
 });
 
 integration.addHandler("get-config", async (_, { client, siteId }) => {
@@ -75,13 +111,23 @@ integration.addHandler("get-config", async (_, { client, siteId }) => {
 integration.addHandler("save-config", async ({ body }, { client, siteId }) => {
   console.log(`Saving config for ${siteId}.`);
 
-  const config = JSON.parse(body) as SiteConfig["cspConfig"];
+  const result = integration._siteConfigSchema.shape.cspConfig.safeParse(
+    JSON.parse(body)
+  );
+
+  if (!result.success) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify(result),
+    };
+  }
+  const { data } = result;
 
   const existingConfig = await client.getSiteIntegration(siteId);
 
   await client.updateSiteIntegration(siteId, {
     ...existingConfig.config,
-    cspConfig: config,
+    cspConfig: data,
   });
 
   return {
@@ -119,7 +165,7 @@ integration.addHandler(
   async (_, { client, siteId, teamId }) => {
     const { token } = await client.generateBuildToken(siteId);
     await client.setBuildToken(teamId, siteId, token);
-    await client.enableBuildhook(siteId);
+    await client.enableBuildEventHandlers(siteId);
 
     const { url, id } = await client.createBuildHook(siteId, {
       title: "CSP Configuration Tests",
@@ -149,7 +195,7 @@ integration.addHandler(
       },
     } = await client.getSiteIntegration(siteId);
 
-    await client.disableBuildhook(siteId);
+    await client.disableBuildEventHandlers(siteId);
     await client.removeBuildToken(teamId, siteId);
 
     await client.deleteBuildHook(siteId, buildHookId);
@@ -171,7 +217,7 @@ integration.onDisable(async ({ queryStringParameters }, { client }) => {
     const { id: buildHookId } = buildHook ?? {};
 
     if (buildHookId) {
-      await client.disableBuildhook(siteId);
+      await client.disableBuildEventHandlers(siteId);
       await client.removeBuildToken(teamId, siteId);
 
       await client.deleteBuildHook(siteId, buildHookId);
