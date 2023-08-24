@@ -42,9 +42,9 @@ root.onLoad(
 
 const mapConfig = (surfaceInputsData: Record<string, string | string[]>) => {
   const {
-    "csp-configuration_reportOnly": reportOnly = "true",
+    "csp-configuration_reportOnly": configReportOnly = "true",
     "csp-configuration_reportUri": reportUri = "",
-    "csp-configuration_unsafeEval": unsafeEval = "true",
+    "csp-configuration_unsafeEval": configUnsafeEval = "true",
     "csp-configuration_path": configPath = "/*",
     "csp-configuration_excludedPath": configExcludedPath = "",
   } = surfaceInputsData;
@@ -59,6 +59,9 @@ const mapConfig = (surfaceInputsData: Record<string, string | string[]>) => {
   const path = configPath === "" ? [] : configPath.split("\n");
   const excludedPath =
     configExcludedPath === "" ? [] : configExcludedPath.split("\n");
+
+  const reportOnly = configReportOnly === "true";
+  const unsafeEval = configUnsafeEval === "true";
 
   const config = {
     reportOnly,
@@ -86,6 +89,7 @@ root.addCard(
       text: "Learn more in the integration readme",
       href: "https://github.com/netlify/integration-csp",
       target: "_blank",
+      block: true,
     });
 
     card.addButton({

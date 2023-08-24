@@ -9,8 +9,8 @@ dependencies:
     specifier: ^1.2.1
     version: 1.2.1
   '@netlify/sdk':
-    specifier: ^0.7.14
-    version: 0.7.14(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
+    specifier: ^0.8.1
+    version: 0.8.1(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
@@ -2091,8 +2091,8 @@ packages:
     resolution: {integrity: sha512-jz3HzCancUgD220v2ePXHRMXiIDQtpYnKzL6SXqhBI/CZgvrJ1i+0U4LfExGYniw5+hkLFM1nH+4LpgQnYJKQw==}
     dev: false
 
-  /@netlify/sdk@0.7.14(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
-    resolution: {integrity: sha512-u+LHG1lKe3n3zlcPxLjvS9YVVGQ4t9kVfCzj1mwBYzv4M9a/bcgDP6i1RhxoRa17zBNejxMlOczOd8j33vM7rQ==}
+  /@netlify/sdk@0.8.1(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
+    resolution: {integrity: sha512-J8NGnZdjDpxQ5qCwJ/Kob5PrYsJTjqbz+KKCGz/GQFuBZ6UqBHf7tYA+ORkeMclZHgxBLv8HxFDePxknwReqTw==}
     hasBin: true
     dependencies:
       '@netlify/functions': 1.6.0
