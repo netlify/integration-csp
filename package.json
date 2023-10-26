@@ -9,7 +9,7 @@
     "preview": "ntli preview"
   },
   "dependencies": {
-    "@netlify/plugin-csp-nonce": "^1.2.3",
+    "@netlify/plugin-csp-nonce": "^1.2.4",
     "@netlify/sdk": "^0.8.1",
     "typescript": "^5.1.6"
   }
