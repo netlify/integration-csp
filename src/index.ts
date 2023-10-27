@@ -46,7 +46,7 @@ integration.addBuildEventHandler(
     // 2. Build context
     // 3. Plugin options - realistically won't ever be called in this context
 
-    let { config } = buildContext ?? opts ?? {};
+    let { config } = buildContext ?? opts;
 
     if (process.env.INCOMING_HOOK_BODY) {
       console.log("Using temporary config from test build.");
@@ -59,7 +59,6 @@ integration.addBuildEventHandler(
       }
     } else {
       if (!config) {
-        console.log();
         config = {
           reportOnly: true,
           reportUri: "",
@@ -94,7 +93,7 @@ integration.addBuildEventContext(async ({ site_config }) => {
   return undefined;
 });
 
-integration.addHandler("get-config", async (_, { client, siteId }) => {
+integration.addApiHandler("get-config", async (_, { client, siteId }) => {
   const { config, has_build_hook_enabled } = await client.getSiteIntegration(
     siteId
   );
@@ -108,34 +107,37 @@ integration.addHandler("get-config", async (_, { client, siteId }) => {
   };
 });
 
-integration.addHandler("save-config", async ({ body }, { client, siteId }) => {
-  console.log(`Saving config for ${siteId}.`);
+integration.addApiHandler(
+  "save-config",
+  async ({ body }, { client, siteId }) => {
+    console.log(`Saving config for ${siteId}.`);
 
-  const result = integration._siteConfigSchema.shape.cspConfig.safeParse(
-    JSON.parse(body)
-  );
+    const result = integration._siteConfigSchema.shape.cspConfig.safeParse(
+      JSON.parse(body)
+    );
 
-  if (!result.success) {
+    if (!result.success) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify(result),
+      };
+    }
+    const { data } = result;
+
+    const existingConfig = await client.getSiteIntegration(siteId);
+
+    await client.updateSiteIntegration(siteId, {
+      ...existingConfig.config,
+      cspConfig: data,
+    });
+
     return {
-      statusCode: 400,
-      body: JSON.stringify(result),
+      statusCode: 200,
     };
   }
-  const { data } = result;
+);
 
-  const existingConfig = await client.getSiteIntegration(siteId);
-
-  await client.updateSiteIntegration(siteId, {
-    ...existingConfig.config,
-    cspConfig: data,
-  });
-
-  return {
-    statusCode: 200,
-  };
-});
-
-integration.addHandler(
+integration.addApiHandler(
   "trigger-config-test",
   async ({ body }, { client, siteId }) => {
     console.log(`Triggering build for ${siteId}.`);
@@ -160,7 +162,7 @@ integration.addHandler(
   }
 );
 
-integration.addHandler(
+integration.addApiHandler(
   "enable-build",
   async (_, { client, siteId, teamId }) => {
     const { token } = await client.generateBuildToken(siteId);
@@ -186,7 +188,7 @@ integration.addHandler(
   }
 );
 
-integration.addHandler(
+integration.addApiHandler(
   "disable-build",
   async (_, { client, siteId, teamId }) => {
     const {
