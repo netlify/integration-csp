@@ -20,6 +20,14 @@ const siteConfigSchema = z.object({
     .optional(),
 });
 
+const configSchema = z.object({
+  reportOnly: z.boolean(),
+  reportUri: z.string(),
+  unsafeEval: z.boolean(),
+  path: z.string().array(),
+  excludedPath: z.string().array(),
+});
+
 const buildConfigSchema = z.object({
   reportOnly: z.boolean().optional(),
   reportUri: z.string().optional(),
@@ -47,17 +55,29 @@ integration.addBuildEventHandler(
     // 3. Plugin options - realistically won't ever be called in this context
 
     let { config } = buildContext ?? opts;
+    let tempConfig = false;
 
     if (process.env.INCOMING_HOOK_BODY) {
-      console.log("Using temporary config from test build.");
       try {
         const hookBody = JSON.parse(process.env.INCOMING_HOOK_BODY);
-        config = integration._buildConfigurationSchema.parse(hookBody);
+        const result = configSchema.safeParse(hookBody);
+
+        if (result.success) {
+          console.log("Using temporary config from test build.");
+          config = result.data;
+          tempConfig = true;
+        } else {
+          console.log(
+            "Incoming hook is present, but not a configuration object for CSP."
+          );
+        }
       } catch (e) {
         console.warn("Failed to parse incoming hook body.");
         console.log(e);
       }
-    } else {
+    }
+
+    if (!tempConfig) {
       if (!config) {
         config = {
           reportOnly: true,
