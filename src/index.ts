@@ -20,12 +20,13 @@ const siteConfigSchema = z.object({
     .optional(),
 });
 
-const configSchema = z.object({
+const previewBuildConfigSchema = z.object({
   reportOnly: z.boolean(),
   reportUri: z.string(),
   unsafeEval: z.boolean(),
   path: z.string().array(),
   excludedPath: z.string().array(),
+  isTestBuild: z.boolean(),
 });
 
 const buildConfigSchema = z.object({
@@ -60,9 +61,9 @@ integration.addBuildEventHandler(
     if (process.env.INCOMING_HOOK_BODY) {
       try {
         const hookBody = JSON.parse(process.env.INCOMING_HOOK_BODY);
-        const result = configSchema.safeParse(hookBody);
+        const result = previewBuildConfigSchema.safeParse(hookBody);
 
-        if (result.success) {
+        if (result.success && result.data.isTestBuild) {
           console.log("Using temporary config from test build.");
           config = result.data;
           tempConfig = true;
@@ -175,8 +176,6 @@ integration.addApiHandler(
         buildHook: { url: buildHookUrl },
       },
     } = await client.getSiteIntegration(siteId);
-
-    console.log(buildHookUrl);
 
     const res = await fetch(buildHookUrl, {
       method: "POST",

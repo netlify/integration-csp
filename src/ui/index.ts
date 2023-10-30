@@ -210,7 +210,10 @@ root.addForm(
 
         await fetch(`trigger-config-test`, {
           method: "POST",
-          body: JSON.stringify(config),
+          body: JSON.stringify({
+            ...config,
+            isTestBuild: true,
+          }),
         });
       },
     });
