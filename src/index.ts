@@ -98,8 +98,8 @@ integration.addBuildEventHandler(
     console.log(`Report Only: ${config.reportOnly}`);
     console.log(`Report URI: ${config.reportUri}`);
     console.log(`Unsafe Eval: ${config.unsafeEval}`);
-    console.log(`Path: ${config.path.join(", ")}`);
-    console.log(`Excluded Path: ${config.excludedPath.join(", ")}`);
+    console.log(`Path: ${config.path?.join(", ")}`);
+    console.log(`Excluded Path: ${config.excludedPath?.join(", ")}`);
     console.log("---");
 
     const newOpts = {
