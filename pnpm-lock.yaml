@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@netlify/plugin-csp-nonce':
-    specifier: ^1.2.4
-    version: 1.2.4
+    specifier: ^1.2.5
+    version: 1.2.5
   '@netlify/sdk':
     specifier: ^0.8.1
     version: 0.8.1(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2)
@@ -2049,8 +2049,8 @@ packages:
       chance: 1.1.11
     dev: false
 
-  /@netlify/plugin-csp-nonce@1.2.4:
-    resolution: {integrity: sha512-5weJi1x07Mc7aIgnMLPkfxMCFDAayyHHHSiJuU1qn5HYzMfqmrtvRh1CCUmtoHBBpbcaMLtx6ebE6OICdK9OxQ==}
+  /@netlify/plugin-csp-nonce@1.2.5:
+    resolution: {integrity: sha512-T9ab1tQv8W6VFAE2g9jrMr0wzOTLnlmb3COsDRllZcCBXpPDMiuty7GNzjGUHGbho6elEUYxDOGjZB350mTKUQ==}
     dev: false
 
   /@netlify/sdk@0.8.1(babel-eslint@10.1.0)(core-js@3.32.0)(react-dom@18.2.0)(react@18.2.0)(webpack@5.88.2):
