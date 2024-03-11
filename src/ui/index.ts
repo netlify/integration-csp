@@ -185,7 +185,6 @@ root.addForm(
       id: "path",
       label: "Path",
       fieldType: "textarea",
-      value: "/*",
       helpText:
         "The glob expressions of path(s) that should invoke the integration's edge function, separated by newlines.",
     });
