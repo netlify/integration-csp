@@ -49,7 +49,7 @@ const integration = new NetlifyIntegration({
 
 integration.addBuildEventHandler(
   "onPreBuild",
-  ({ buildContext, netlifyConfig, utils, ...opts }) => {
+  ({ buildContext, netlifyConfig, utils, constants, ...opts }) => {
     // We lean on this favoured order of precedence:
     // 1. Incoming hook body
     // 2. Build context
@@ -69,7 +69,7 @@ integration.addBuildEventHandler(
           tempConfig = true;
         } else {
           console.log(
-            "Incoming hook is present, but not a configuration object for CSP."
+            "Incoming hook is present, but not a configuration object for CSP.",
           );
         }
       } catch (e) {
@@ -93,6 +93,11 @@ integration.addBuildEventHandler(
       }
     }
 
+    // Ensure if path is not present, that it is set to "/*" as a default
+    if (!config.path) {
+      config.path = ["/*"];
+    }
+
     console.log("Config:");
     console.log("---");
     console.log(`Report Only: ${config.reportOnly}`);
@@ -104,13 +109,14 @@ integration.addBuildEventHandler(
 
     const newOpts = {
       ...opts,
+      constants,
       netlifyConfig,
       utils,
       config,
     };
 
     return onPreBuild(newOpts);
-  }
+  },
 );
 
 integration.addBuildEventContext(async ({ site_config }) => {
@@ -124,9 +130,8 @@ integration.addBuildEventContext(async ({ site_config }) => {
 });
 
 integration.addApiHandler("get-config", async (_, { client, siteId }) => {
-  const { config, has_build_hook_enabled } = await client.getSiteIntegration(
-    siteId
-  );
+  const { config, has_build_hook_enabled } =
+    await client.getSiteIntegration(siteId);
 
   return {
     statusCode: 200,
@@ -143,7 +148,7 @@ integration.addApiHandler(
     console.log(`Saving config for ${siteId}.`);
 
     const result = integration._siteConfigSchema.shape.cspConfig.safeParse(
-      JSON.parse(body)
+      JSON.parse(body),
     );
 
     if (!result.success) {
@@ -164,7 +169,7 @@ integration.addApiHandler(
     return {
       statusCode: 200,
     };
-  }
+  },
 );
 
 integration.addApiHandler(
@@ -187,7 +192,7 @@ integration.addApiHandler(
     return {
       statusCode: 200,
     };
-  }
+  },
 );
 
 integration.addApiHandler(
@@ -213,7 +218,7 @@ integration.addApiHandler(
     return {
       statusCode: 200,
     };
-  }
+  },
 );
 
 integration.addApiHandler(
@@ -233,7 +238,7 @@ integration.addApiHandler(
     return {
       statusCode: 200,
     };
-  }
+  },
 );
 
 integration.onDisable(async ({ queryStringParameters }, { client }) => {

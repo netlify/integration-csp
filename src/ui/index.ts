@@ -37,7 +37,7 @@ root.onLoad(
       cspConfig.reportUri ?? "";
     surfaceInputsData["csp-configuration_unsafeEval"] = unsafeEval;
     surfaceInputsData["csp-configuration_path"] =
-      cspConfig.path?.join("\n") ?? "";
+      cspConfig.path?.join("\n") ?? "/*";
     surfaceInputsData["csp-configuration_excludedPath"] =
       cspConfig.excludedPath?.join("\n") ?? "";
 
@@ -45,7 +45,7 @@ root.onLoad(
       surfaceInputsData,
       surfaceRouteConfig,
     };
-  }
+  },
 );
 
 const mapConfig = (surfaceInputsData: Record<string, string | string[]>) => {
@@ -134,7 +134,7 @@ root.addCard(
         }
       },
     });
-  }
+  },
 );
 
 root.addForm(
@@ -185,6 +185,7 @@ root.addForm(
       id: "path",
       label: "Path",
       fieldType: "textarea",
+      value: "/*",
       helpText:
         "The glob expressions of path(s) that should invoke the integration's edge function, separated by newlines.",
     });
@@ -221,6 +222,6 @@ root.addForm(
     form.addText({
       value: "After saving, your configuration will apply to future deploys.",
     });
-  }
+  },
 );
 export { integrationUI };
