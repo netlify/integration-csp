@@ -34,9 +34,9 @@ When true, adds `'unsafe-eval'` to the CSP for easier adoption. Set to `false` t
 
 #### `path`
 
-_Default: `"/_"`.\*
+_Default: `/*`._
 
-The glob expressions of path(s) that should invoke the CSP nonce edge function. Can be a string or array of strings.
+The glob expressions of path(s) that should invoke the CSP nonce edge function. Can be a string or array of strings. 
 
 #### `excludedPath`
 
