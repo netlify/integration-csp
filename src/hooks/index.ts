@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 
 export const onPreBuild = async ({
   config,
@@ -11,9 +12,10 @@ export const onPreBuild = async ({
   const { INTERNAL_FUNCTIONS_SRC, INTERNAL_EDGE_FUNCTIONS_SRC, PACKAGE_PATH } =
     constants;
 
-  const pluginDir = PACKAGE_PATH
-    ? `${PACKAGE_PATH}/.netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src`
-    : ".netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src";
+  const pluginDir = path.resolve(
+    PACKAGE_PATH || "",
+    ".netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src",
+  );
 
   // CSP_NONCE_DISTRIBUTION is a number from 0 to 1,
   // but 0 to 100 is also supported, along with a trailing %
