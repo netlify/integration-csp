@@ -8,7 +8,12 @@ export const onPreBuild = async ({
 }) => {
   const configString = JSON.stringify(config, null, 2);
   const { build } = netlifyConfig;
-  const { INTERNAL_FUNCTIONS_SRC, INTERNAL_EDGE_FUNCTIONS_SRC } = constants;
+  const { INTERNAL_FUNCTIONS_SRC, INTERNAL_EDGE_FUNCTIONS_SRC, PACKAGE_PATH } =
+    constants;
+
+  const pluginDir = PACKAGE_PATH
+    ? `${PACKAGE_PATH}/.netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src`
+    : ".netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src";
 
   // CSP_NONCE_DISTRIBUTION is a number from 0 to 1,
   // but 0 to 100 is also supported, along with a trailing %
@@ -35,8 +40,7 @@ export const onPreBuild = async ({
   console.log(
     `  Writing nonce edge function to ${INTERNAL_EDGE_FUNCTIONS_SRC}...`,
   );
-  const nonceSource =
-    ".netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src/__csp-nonce.ts";
+  const nonceSource = `${pluginDir}/__csp-nonce.ts`;
   const nonceDest = `${INTERNAL_EDGE_FUNCTIONS_SRC}/__csp-nonce.ts`;
   fs.copyFileSync(nonceSource, nonceDest);
 
@@ -47,8 +51,7 @@ export const onPreBuild = async ({
     console.log(
       `  Writing violations logging function to ${INTERNAL_FUNCTIONS_SRC}...`,
     );
-    const violationsSource =
-      ".netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src/__csp-violations.ts";
+    const violationsSource = `${pluginDir}/__csp-violations.ts`;
     const violationsDest = `${INTERNAL_FUNCTIONS_SRC}/__csp-violations.ts`;
     fs.copyFileSync(violationsSource, violationsDest);
   } else {
