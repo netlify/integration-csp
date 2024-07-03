@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@netlify/plugin-csp-nonce':
-    specifier: ^1.2.9
-    version: 1.2.9
+    specifier: ^1.2.10
+    version: 1.2.10
   '@netlify/sdk':
     specifier: ^1.5.0
     version: 1.5.0
@@ -573,8 +573,8 @@ packages:
       chance: 1.1.11
     dev: false
 
-  /@netlify/plugin-csp-nonce@1.2.9:
-    resolution: {integrity: sha512-ZI399y0jXqfa4teqgJY3kpN8EdxefzKKJg32PqwWm2jiTfODbkxHAAYJF8XgzyUJoMKl3Q2/3R6gzPUfd05eUg==}
+  /@netlify/plugin-csp-nonce@1.2.10:
+    resolution: {integrity: sha512-Y0EzJrdR7tENIkR3vs2/79qVQcJdKDBf17LJKycWp9jwLuInifhOtbJHZGYBrX5WEP643y2K+MAZ1170Ut1ZMg==}
     dev: false
 
   /@netlify/sdk@1.5.0:
