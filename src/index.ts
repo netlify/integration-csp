@@ -198,7 +198,7 @@ integration.addApiHandler(
 integration.addApiHandler(
   "enable-build",
   async (_, { client, siteId, teamId }) => {
-    const { token } = await client.generateBuildToken(siteId);
+    const { token } = await client.generateBuildToken(siteId, teamId);
     await client.setBuildToken(teamId, siteId, token);
     await client.enableBuildEventHandlers(siteId);
 
