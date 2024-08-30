@@ -11,6 +11,7 @@
     "@netlify/netlify-plugin-netlify-extension": "0.2.0-pre.23b5d75",
     "@netlify/plugin-csp-nonce": "^1.2.9",
     "@netlify/sdk": "2.0.0-pre.23b5d75",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "netlify-cli": "^17.34.2"
   }
 }
