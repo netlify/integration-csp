@@ -1,16 +1,16 @@
 {
-  "name": "csp-test",
+  "name": "csp-extension",
   "version": "0.0.1",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "ntli build -a",
-    "dev": "ntli dev -a",
-    "preview": "ntli preview"
+    "build": "netlify-extension build",
+    "dev": "netlify-extension dev"
   },
   "dependencies": {
+    "@netlify/netlify-plugin-netlify-extension": "0.2.0-pre.23b5d75",
     "@netlify/plugin-csp-nonce": "^1.2.9",
-    "@netlify/sdk": "^1.5.0",
+    "@netlify/sdk": "2.0.0-pre.23b5d75",
     "typescript": "^5.1.6"
   }
 }

@@ -1,5 +1,5 @@
 // Documentation: https://github.com/netlify/sdk
-import { NetlifyIntegration, z } from "@netlify/sdk";
+import { NetlifyExtension, z } from "@netlify/sdk";
 import { onPreBuild } from "./hooks";
 
 const siteConfigSchema = z.object({
@@ -41,13 +41,13 @@ const buildContextSchema = z.object({
   config: siteConfigSchema.shape.cspConfig,
 });
 
-const integration = new NetlifyIntegration({
+const extension = new NetlifyExtension({
   siteConfigSchema,
   buildConfigSchema,
   buildContextSchema,
 });
 
-integration.addBuildEventHandler(
+extension.addBuildEventHandler(
   "onPreBuild",
   ({ buildContext, netlifyConfig, utils, constants, ...opts }) => {
     // We lean on this favoured order of precedence:
@@ -69,7 +69,7 @@ integration.addBuildEventHandler(
           tempConfig = true;
         } else {
           console.log(
-            "Incoming hook is present, but not a configuration object for CSP.",
+            "Incoming hook is present, but not a configuration object for CSP."
           );
         }
       } catch (e) {
@@ -116,10 +116,10 @@ integration.addBuildEventHandler(
     };
 
     return onPreBuild(newOpts);
-  },
+  }
 );
 
-integration.addBuildEventContext(async ({ site_config }) => {
+extension.addBuildEventContext(async ({ site_config }) => {
   if (site_config.cspConfig) {
     return {
       config: site_config.cspConfig,
@@ -129,142 +129,140 @@ integration.addBuildEventContext(async ({ site_config }) => {
   return undefined;
 });
 
-integration.addApiHandler("get-config", async (_, { client, siteId }) => {
-  const { config, has_build_hook_enabled } =
-    await client.getSiteIntegration(siteId);
+// extension.addApiHandler("get-config", async (_, { client, siteId }) => {
+//   const { config, has_build_hook_enabled } = await client.getSiteIntegration(
+//     siteId
+//   );
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      has_build_hook_enabled,
-      cspConfig: config.cspConfig ?? {},
-    }),
-  };
-});
+//   return {
+//     statusCode: 200,
+//     body: JSON.stringify({
+//       has_build_hook_enabled,
+//       cspConfig: config.cspConfig ?? {},
+//     }),
+//   };
+// });
 
-integration.addApiHandler(
-  "save-config",
-  async ({ body }, { client, siteId }) => {
-    console.log(`Saving config for ${siteId}.`);
+// extension.addApiHandler("save-config", async ({ body }, { client, siteId }) => {
+//   console.log(`Saving config for ${siteId}.`);
 
-    const result = integration._siteConfigSchema.shape.cspConfig.safeParse(
-      JSON.parse(body),
-    );
+//   const result = extension._siteConfigSchema.shape.cspConfig.safeParse(
+//     JSON.parse(body)
+//   );
 
-    if (!result.success) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify(result),
-      };
-    }
-    const { data } = result;
+//   if (!result.success) {
+//     return {
+//       statusCode: 400,
+//       body: JSON.stringify(result),
+//     };
+//   }
+//   const { data } = result;
 
-    const existingConfig = await client.getSiteIntegration(siteId);
+//   const existingConfig = await client.getSiteIntegration(siteId);
 
-    await client.updateSiteIntegration(siteId, {
-      ...existingConfig.config,
-      cspConfig: data,
-    });
+//   await client.updateSiteIntegration(siteId, {
+//     ...existingConfig.config,
+//     cspConfig: data,
+//   });
 
-    return {
-      statusCode: 200,
-    };
-  },
-);
+//   return {
+//     statusCode: 200,
+//   };
+// });
 
-integration.addApiHandler(
-  "trigger-config-test",
-  async ({ body }, { client, siteId }) => {
-    console.log(`Triggering build for ${siteId}.`);
-    const {
-      config: {
-        buildHook: { url: buildHookUrl },
-      },
-    } = await client.getSiteIntegration(siteId);
+// extension.addApiHandler(
+//   "trigger-config-test",
+//   async ({ body }, { client, siteId }) => {
+//     console.log(`Triggering build for ${siteId}.`);
+//     const {
+//       config: {
+//         buildHook: { url: buildHookUrl },
+//       },
+//     } = await client.getSiteIntegration(siteId);
 
-    const res = await fetch(buildHookUrl, {
-      method: "POST",
-      body,
-    });
+//     const res = await fetch(buildHookUrl, {
+//       method: "POST",
+//       body,
+//     });
 
-    console.log(`Triggered build for ${siteId} with status ${res.status}.`);
+//     console.log(`Triggered build for ${siteId} with status ${res.status}.`);
 
-    return {
-      statusCode: 200,
-    };
-  },
-);
+//     return {
+//       statusCode: 200,
+//     };
+//   }
+// );
 
-integration.addApiHandler(
-  "enable-build",
-  async (_, { client, siteId, teamId }) => {
-    const { token } = await client.generateBuildToken(siteId, teamId);
-    await client.setBuildToken(teamId, siteId, token);
-    await client.enableBuildEventHandlers(siteId);
+// extension.addApiHandler(
+//   "enable-build",
+//   async (_, { client, siteId, teamId }) => {
+//     const { token } = await client.generateBuildToken(siteId, teamId);
+//     await client.setBuildToken(teamId, siteId, token);
+//     await client.enableBuildEventHandlers(siteId);
 
-    const { url, id } = await client.createBuildHook(siteId, {
-      title: "CSP Configuration Tests",
-      branch: "main",
-      draft: true,
-    });
+//     const { url, id } = await client.createBuildHook(siteId, {
+//       title: "CSP Configuration Tests",
+//       branch: "main",
+//       draft: true,
+//     });
 
-    await client.updateSiteIntegration(siteId, {
-      buildHook: {
-        url,
-        id,
-      },
-    });
+//     await client.updateSiteIntegration(siteId, {
+//       buildHook: {
+//         url,
+//         id,
+//       },
+//     });
 
-    return {
-      statusCode: 200,
-    };
-  },
-);
+//     return {
+//       statusCode: 200,
+//     };
+//   }
+// );
 
-integration.addApiHandler(
-  "disable-build",
-  async (_, { client, siteId, teamId }) => {
-    const {
-      config: {
-        buildHook: { id: buildHookId },
-      },
-    } = await client.getSiteIntegration(siteId);
+// extension.addApiHandler(
+//   "disable-build",
+//   async (_, { client, siteId, teamId }) => {
+//     const {
+//       config: {
+//         buildHook: { id: buildHookId },
+//       },
+//     } = await client.getSiteIntegration(siteId);
 
-    await client.disableBuildEventHandlers(siteId);
-    await client.removeBuildToken(teamId, siteId);
+//     await client.disableBuildEventHandlers(siteId);
+//     await client.removeBuildToken(teamId, siteId);
 
-    await client.deleteBuildHook(siteId, buildHookId);
+//     await client.deleteBuildHook(siteId, buildHookId);
 
-    return {
-      statusCode: 200,
-    };
-  },
-);
+//     return {
+//       statusCode: 200,
+//     };
+//   }
+// );
 
-integration.onDisable(async ({ queryStringParameters }, { client }) => {
-  const { siteId, teamId } = queryStringParameters;
+// extension.onDisable(async ({ queryStringParameters }, { client }) => {
+//   const { siteId, teamId } = queryStringParameters;
 
-  const {
-    config: { buildHook },
-  } = await client.getSiteIntegration(siteId);
+//   const {
+//     config: { buildHook },
+//   } = await client.getSiteIntegration(siteId);
 
-  try {
-    const { id: buildHookId } = buildHook ?? {};
+//   try {
+//     const { id: buildHookId } = buildHook ?? {};
 
-    if (buildHookId) {
-      await client.disableBuildEventHandlers(siteId);
-      await client.removeBuildToken(teamId, siteId);
+//     if (buildHookId) {
+//       await client.disableBuildEventHandlers(siteId);
+//       await client.removeBuildToken(teamId, siteId);
 
-      await client.deleteBuildHook(siteId, buildHookId);
-    }
-  } catch (e) {
-    console.log("Failed to disable buildhooks");
-    console.error(e);
-  }
+//       await client.deleteBuildHook(siteId, buildHookId);
+//     }
+//   } catch (e) {
+//     console.log("Failed to disable buildhooks");
+//     console.error(e);
+//   }
 
-  return {
-    statusCode: 200,
-  };
-});
+//   return {
+//     statusCode: 200,
+//   };
+// });
 
-export { integration };
+export { extension };
