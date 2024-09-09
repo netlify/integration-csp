@@ -1,5 +1,5 @@
 // Documentation: https://github.com/netlify/sdk
-import { NetlifyIntegration, z } from "@netlify/sdk";
+import { NetlifyExtension, z } from "@netlify/sdk";
 import { onPreBuild } from "./hooks";
 
 const siteConfigSchema = z.object({
@@ -41,15 +41,26 @@ const buildContextSchema = z.object({
   config: siteConfigSchema.shape.cspConfig,
 });
 
-const integration = new NetlifyIntegration({
+const extension = new NetlifyExtension({
   siteConfigSchema,
   buildConfigSchema,
   buildContextSchema,
 });
 
-integration.addBuildEventHandler(
+export const CSP_EXTENSION_ENABLED = "CSP_EXTENSION_ENABLED";
+
+extension.addBuildEventHandler(
   "onPreBuild",
   ({ buildContext, netlifyConfig, utils, constants, ...opts }) => {
+    if (
+      !process.env[CSP_EXTENSION_ENABLED] ||
+      process.env[CSP_EXTENSION_ENABLED] === "false"
+    ) {
+      // The build event only runs if it has been configured to run on a site, indicated by setting this env var
+      return;
+    }
+    // TODO: Add safeguard as to whether this should run on a site, using an environment variable and then after that, using a config
+
     // We lean on this favoured order of precedence:
     // 1. Incoming hook body
     // 2. Build context
@@ -119,7 +130,7 @@ integration.addBuildEventHandler(
   },
 );
 
-integration.addBuildEventContext(async ({ site_config }) => {
+extension.addBuildEventContext(async ({ site_config }) => {
   if (site_config.cspConfig) {
     return {
       config: site_config.cspConfig,
@@ -129,50 +140,51 @@ integration.addBuildEventContext(async ({ site_config }) => {
   return undefined;
 });
 
-integration.addApiHandler("get-config", async (_, { client, siteId }) => {
-  const { config, has_build_hook_enabled } =
-    await client.getSiteIntegration(siteId);
+// used in IUI
+// extension.addApiHandler("get-config", async (_, { client, siteId }) => {
+//   const { config, has_build_hook_enabled } =
+//     await client.getSiteIntegration(siteId);
+//
+//   return {
+//     statusCode: 200,
+//     body: JSON.stringify({
+//       has_build_hook_enabled,
+//       cspConfig: config.cspConfig ?? {},
+//     }),
+//   };
+// });
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      has_build_hook_enabled,
-      cspConfig: config.cspConfig ?? {},
-    }),
-  };
-});
+// used in IUI
+// extension.addApiHandler("save-config", async ({ body }, { client, siteId }) => {
+//   console.log(`Saving config for ${siteId}.`);
+//
+//   const result = extension._siteConfigSchema.shape.cspConfig.safeParse(
+//     JSON.parse(body),
+//   );
+//
+//   if (!result.success) {
+//     return {
+//       statusCode: 400,
+//       body: JSON.stringify(result),
+//     };
+//   }
+//   const { data } = result;
+//
+//   const existingConfig = await client.getSiteIntegration(siteId);
+//
+//   await client.updateSiteIntegration(siteId, {
+//     ...existingConfig.config,
+//     cspConfig: data,
+//   });
+//
+//   return {
+//     statusCode: 200,
+//   };
+// });
 
-integration.addApiHandler(
-  "save-config",
-  async ({ body }, { client, siteId }) => {
-    console.log(`Saving config for ${siteId}.`);
-
-    const result = integration._siteConfigSchema.shape.cspConfig.safeParse(
-      JSON.parse(body),
-    );
-
-    if (!result.success) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify(result),
-      };
-    }
-    const { data } = result;
-
-    const existingConfig = await client.getSiteIntegration(siteId);
-
-    await client.updateSiteIntegration(siteId, {
-      ...existingConfig.config,
-      cspConfig: data,
-    });
-
-    return {
-      statusCode: 200,
-    };
-  },
-);
-
-integration.addApiHandler(
+//
+// used in IUI
+extension.addApiHandler(
   "trigger-config-test",
   async ({ body }, { client, siteId }) => {
     console.log(`Triggering build for ${siteId}.`);
@@ -195,11 +207,13 @@ integration.addApiHandler(
   },
 );
 
-integration.addApiHandler(
+// used in IUI
+extension.addApiHandler(
   "enable-build",
   async (_, { client, siteId, teamId }) => {
     const { token } = await client.generateBuildToken(siteId, teamId);
     await client.setBuildToken(teamId, siteId, token);
+    //  TODO: Setup a safeguard for this extension to ensure they are only enabled where CSP is configured to run
     await client.enableBuildEventHandlers(siteId);
 
     const { url, id } = await client.createBuildHook(siteId, {
@@ -221,7 +235,8 @@ integration.addApiHandler(
   },
 );
 
-integration.addApiHandler(
+// used in IUI
+extension.addApiHandler(
   "disable-build",
   async (_, { client, siteId, teamId }) => {
     const {
@@ -241,20 +256,30 @@ integration.addApiHandler(
   },
 );
 
-integration.onDisable(async ({ queryStringParameters }, { client }) => {
+extension.onUninstall(async ({ queryStringParameters }, { client }) => {
   const { siteId, teamId } = queryStringParameters;
 
   const {
     config: { buildHook },
-  } = await client.getSiteIntegration(siteId);
+  } = await client.getSiteConfiguration(teamId, siteId);
+
+  try {
+    await client.deleteEnvironmentVariable({
+      accountId: teamId,
+      siteId,
+      key: CSP_EXTENSION_ENABLED,
+    });
+  } catch (e) {
+    console.error(
+      `Failed to remove ${CSP_EXTENSION_ENABLED} env var for site: ${siteId} and team: ${teamId}`,
+    );
+  }
 
   try {
     const { id: buildHookId } = buildHook ?? {};
 
     if (buildHookId) {
-      await client.disableBuildEventHandlers(siteId);
       await client.removeBuildToken(teamId, siteId);
-
       await client.deleteBuildHook(siteId, buildHookId);
     }
   } catch (e) {
@@ -267,4 +292,4 @@ integration.onDisable(async ({ queryStringParameters }, { client }) => {
   };
 });
 
-export { integration };
+export { extension };
