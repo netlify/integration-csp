@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "netlify-extension build",
-    "dev": "netlify-extension dev",
-    "preview": "ntli preview"
+    "dev": "netlify-extension dev"
   },
   "dependencies": {
     "@netlify/functions": "^2.8.1",

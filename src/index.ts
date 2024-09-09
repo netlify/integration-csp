@@ -66,6 +66,7 @@ extension.addBuildEventHandler(
     // 2. Build context
     // 3. Plugin options - realistically won't ever be called in this context
 
+    // @ts-ignore TODO: Deal with it later
     let { config } = buildContext ?? opts;
     let tempConfig = false;
 
@@ -80,7 +81,7 @@ extension.addBuildEventHandler(
           tempConfig = true;
         } else {
           console.log(
-            "Incoming hook is present, but not a configuration object for CSP.",
+            "Incoming hook is present, but not a configuration object for CSP."
           );
         }
       } catch (e) {
@@ -127,9 +128,10 @@ extension.addBuildEventHandler(
     };
 
     return onPreBuild(newOpts);
-  },
+  }
 );
 
+// @ts-ignore TODO: fix types!
 extension.addBuildEventContext(async ({ site_config }) => {
   if (site_config.cspConfig) {
     return {
@@ -184,82 +186,90 @@ extension.addBuildEventContext(async ({ site_config }) => {
 
 //
 // used in IUI
-extension.addApiHandler(
-  "trigger-config-test",
-  async ({ body }, { client, siteId }) => {
-    console.log(`Triggering build for ${siteId}.`);
-    const {
-      config: {
-        buildHook: { url: buildHookUrl },
-      },
-    } = await client.getSiteIntegration(siteId);
+// extension.addApiHandler(
+//   "trigger-config-test",
+//   async ({ body }, { client, siteId }) => {
+//     console.log(`Triggering build for ${siteId}.`);
+//     const {
+//       config: {
+//         buildHook: { url: buildHookUrl },
+//       },
+//     } = await client.getSiteIntegration(siteId);
 
-    const res = await fetch(buildHookUrl, {
-      method: "POST",
-      body,
-    });
+//     const res = await fetch(buildHookUrl, {
+//       method: "POST",
+//       body,
+//     });
 
-    console.log(`Triggered build for ${siteId} with status ${res.status}.`);
+//     console.log(`Triggered build for ${siteId} with status ${res.status}.`);
 
-    return {
-      statusCode: 200,
-    };
-  },
-);
-
-// used in IUI
-extension.addApiHandler(
-  "enable-build",
-  async (_, { client, siteId, teamId }) => {
-    const { token } = await client.generateBuildToken(siteId, teamId);
-    await client.setBuildToken(teamId, siteId, token);
-    //  TODO: Setup a safeguard for this extension to ensure they are only enabled where CSP is configured to run
-    await client.enableBuildEventHandlers(siteId);
-
-    const { url, id } = await client.createBuildHook(siteId, {
-      title: "CSP Configuration Tests",
-      branch: "main",
-      draft: true,
-    });
-
-    await client.updateSiteIntegration(siteId, {
-      buildHook: {
-        url,
-        id,
-      },
-    });
-
-    return {
-      statusCode: 200,
-    };
-  },
-);
+//     return {
+//       statusCode: 200,
+//     };
+//   },
+// );
 
 // used in IUI
-extension.addApiHandler(
-  "disable-build",
-  async (_, { client, siteId, teamId }) => {
-    const {
-      config: {
-        buildHook: { id: buildHookId },
-      },
-    } = await client.getSiteIntegration(siteId);
+// extension.addApiHandler(
+//   "enable-build",
+//   async (_, { client, siteId, teamId }) => {
+//     const { token } = await client.generateBuildToken(siteId, teamId);
+//     await client.setBuildToken(teamId, siteId, token);
+//     //  TODO: Setup a safeguard for this extension to ensure they are only enabled where CSP is configured to run
+//     await client.enableBuildEventHandlers(siteId);
 
-    await client.disableBuildEventHandlers(siteId);
-    await client.removeBuildToken(teamId, siteId);
+//     const { url, id } = await client.createBuildHook(siteId, {
+//       title: "CSP Configuration Tests",
+//       branch: "main",
+//       draft: true,
+//     });
 
-    await client.deleteBuildHook(siteId, buildHookId);
+//     await client.updateSiteIntegration(siteId, {
+//       buildHook: {
+//         url,
+//         id,
+//       },
+//     });
 
-    return {
-      statusCode: 200,
-    };
-  },
-);
+//     return {
+//       statusCode: 200,
+//     };
+//   }
+// );
+
+// used in IUI
+// extension.addApiHandler(
+//   "disable-build",
+//   async (_, { client, siteId, teamId }) => {
+//     const {
+//       config: {
+//         buildHook: { id: buildHookId },
+//       },
+//     } = await client.getSiteIntegration(siteId);
+
+//     await client.disableBuildEventHandlers(siteId);
+//     await client.removeBuildToken(teamId, siteId);
+
+//     await client.deleteBuildHook(siteId, buildHookId);
+
+//     return {
+//       statusCode: 200,
+//     };
+//   }
+// );
 
 extension.onUninstall(async ({ queryStringParameters }, { client }) => {
+  // @ts-ignore TODO: fix types!
   const { siteId, teamId } = queryStringParameters;
+  if (!siteId || !teamId) {
+    return {
+      statusCode: 500,
+      body: "Missing siteId and/or teamId",
+    };
+  }
 
   const {
+    // @ts-ignore TODO: fix types!
     config: { buildHook },
   } = await client.getSiteConfiguration(teamId, siteId);
 
@@ -271,7 +281,7 @@ extension.onUninstall(async ({ queryStringParameters }, { client }) => {
     });
   } catch (e) {
     console.error(
-      `Failed to remove ${CSP_EXTENSION_ENABLED} env var for site: ${siteId} and team: ${teamId}`,
+      `Failed to remove ${CSP_EXTENSION_ENABLED} env var for site: ${siteId} and team: ${teamId}`
     );
   }
 

@@ -35,7 +35,7 @@ export const appRouter = router({
           if (!configData.success) {
             console.warn(
               "Failed to parse site settings",
-              JSON.stringify(configData.error, null, 2),
+              JSON.stringify(configData.error, null, 2)
             );
           }
         }
@@ -44,7 +44,7 @@ export const appRouter = router({
           config: configData,
           enabledForSite: !!enabledVar?.value && enabledVar.value !== "false",
         };
-      },
+      }
     ),
 
     mutateTriggerConfigTest: procedure
@@ -68,7 +68,7 @@ export const appRouter = router({
         if (!configData.success) {
           console.warn(
             "Failed to parse site settings",
-            JSON.stringify(configData.error, null, 2),
+            JSON.stringify(configData.error, null, 2)
           );
         }
 
@@ -148,7 +148,57 @@ export const appRouter = router({
             cause: e,
           });
         }
-      },
+      }
+    ),
+    mutateDisablement: procedure.mutation(
+      async ({ ctx: { teamId, siteId, client } }) => {
+        if (!teamId || !siteId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "teamId and siteId are required",
+          });
+        }
+        const siteConfig = await client.getSiteConfiguration(teamId, siteId);
+
+        if (!siteConfig) {
+          return;
+        }
+
+        const configData = siteConfigSchema.safeParse(siteConfig.config);
+
+        if (!configData.success) {
+          console.warn(
+            "Failed to parse site settings",
+            JSON.stringify(configData.error, null, 2)
+          );
+        }
+
+        if (!configData.data?.buildHook?.id) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to retrieve build hook ID",
+          });
+        }
+
+        const {
+          buildHook: { id: buildHookId },
+        } = configData.data;
+
+        await client.removeBuildToken(teamId, siteId);
+        await client.deleteBuildHook(siteId, buildHookId);
+
+        try {
+          await client.deleteEnvironmentVariable({
+            accountId: teamId,
+            siteId,
+            key: CSP_EXTENSION_ENABLED,
+          });
+        } catch (e) {
+          console.error(
+            `Failed to remove ${CSP_EXTENSION_ENABLED} env var for site: ${siteId} and team: ${teamId}`
+          );
+        }
+      }
     ),
   },
 });

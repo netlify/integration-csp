@@ -4,7 +4,7 @@ import {
   CardLoader,
   CardTitle,
   Form,
-  SiteConfigurationSurface,
+  SiteAccessConfigurationSurface,
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
 import { useNetlifySDK } from "@netlify/sdk/ui/react";
@@ -25,6 +25,11 @@ export const SiteConfiguration = () => {
       await trpcUtils.siteConfig.queryConfig.invalidate();
     },
   });
+  const siteDisablementMutation = trpc.siteConfig.mutateEnablement.useMutation({
+    onSuccess: async () => {
+      await trpcUtils.siteConfig.queryConfig.invalidate();
+    },
+  });
   const triggerConfigTestMutation =
     trpc.siteConfig.mutateTriggerConfigTest.useMutation({
       onSuccess: async () => {
@@ -36,16 +41,24 @@ export const SiteConfiguration = () => {
     siteEnablementMutation.mutate();
   };
 
+  const onDisableHandler = () => {
+    siteEnablementMutation.mutate();
+  };
+
   if (siteConfigQuery.isLoading) {
     return <CardLoader />;
   }
 
   return (
-    <SiteConfigurationSurface>
+    <SiteAccessConfigurationSurface>
       <Card>
         <CardTitle>Dynamic Content Security Policy</CardTitle>
         {siteConfigQuery.data?.enabledForSite ? (
           <>
+            <Button onClick={onDisableHandler}>
+              Disable build event handler
+            </Button>
+
             <Form
               schema={buildHookRequestSchema}
               defaultValues={{}}
@@ -75,6 +88,6 @@ export const SiteConfiguration = () => {
           <FormField name="site-env-var" type="number" label="Site env var" />
         </Form>*/}
       </Card>
-    </SiteConfigurationSurface>
+    </SiteAccessConfigurationSurface>
   );
 };

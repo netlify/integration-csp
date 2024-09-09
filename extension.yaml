@@ -1,2 +1,9 @@
 config:
-  slug: dynamic-csp
+  slug: yl9z8yms-migrate-csp-extension
+
+  # set this to true to add a global require shim to esbuild. Workaround for https://github.com/evanw/esbuild/issues/1921
+  use_cjs_shims: false
+
+  ui:
+    surfaces:
+      - extension-site-access-configuration

@@ -1,10 +1,16 @@
-import fs from "fs";
-import path from "path";
+import * as fs from "fs";
+import * as path from "path";
 
 export const onPreBuild = async ({
+  // @ts-ignore TODO: Deal with it later
   config,
+  // @ts-ignore TODO: Deal with it later
+
   netlifyConfig,
+  // @ts-ignore TODO: Deal with it later
+
   utils,
+  // @ts-ignore TODO: Deal with it later
   constants,
 }) => {
   const configString = JSON.stringify(config, null, 2);
@@ -14,7 +20,7 @@ export const onPreBuild = async ({
 
   const pluginDir = path.resolve(
     PACKAGE_PATH || "",
-    ".netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src",
+    ".netlify/plugins/node_modules/@netlify/plugin-csp-nonce/src"
   );
 
   // CSP_NONCE_DISTRIBUTION is a number from 0 to 1,
@@ -37,10 +43,10 @@ export const onPreBuild = async ({
 
   fs.writeFileSync(
     `${INTERNAL_EDGE_FUNCTIONS_SRC}/__csp-nonce-inputs.json`,
-    configString,
+    configString
   );
   console.log(
-    `  Writing nonce edge function to ${INTERNAL_EDGE_FUNCTIONS_SRC}...`,
+    `  Writing nonce edge function to ${INTERNAL_EDGE_FUNCTIONS_SRC}...`
   );
   const nonceSource = `${pluginDir}/__csp-nonce.ts`;
   const nonceDest = `${INTERNAL_EDGE_FUNCTIONS_SRC}/__csp-nonce.ts`;
@@ -51,7 +57,7 @@ export const onPreBuild = async ({
     // make the directory in case it actually doesn't exist yet
     await utils.run.command(`mkdir -p ${INTERNAL_FUNCTIONS_SRC}`);
     console.log(
-      `  Writing violations logging function to ${INTERNAL_FUNCTIONS_SRC}...`,
+      `  Writing violations logging function to ${INTERNAL_FUNCTIONS_SRC}...`
     );
     const violationsSource = `${pluginDir}/__csp-violations.ts`;
     const violationsDest = `${INTERNAL_FUNCTIONS_SRC}/__csp-violations.ts`;
