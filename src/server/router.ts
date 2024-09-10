@@ -14,7 +14,10 @@ export const appRouter = router({
             message: "teamId and siteId are required",
           });
         }
-        const siteConfig = await client.getSiteConfiguration(teamId, siteId);
+        let siteConfig;
+        try {
+          siteConfig = await client.getSiteConfiguration(teamId, siteId);
+        } catch (error) {}
 
         const envVars = await client.getEnvironmentVariables({
           accountId: teamId,
@@ -39,9 +42,8 @@ export const appRouter = router({
             );
           }
         }
-
         return {
-          config: configData,
+          config: configData?.data,
           enabledForSite: !!enabledVar?.value && enabledVar.value !== "false",
         };
       }
@@ -120,7 +122,7 @@ export const appRouter = router({
         const { token } = await client.generateBuildToken(siteId, teamId);
         await client.setBuildToken(teamId, siteId, token);
         //  TODO: Setup a safeguard for this extension to ensure they are only enabled where CSP is configured to run
-        // await client.enableBuildEventHandlers(siteId);
+
         await client.createOrUpdateVariable({
           accountId: teamId,
           siteId,
@@ -135,7 +137,17 @@ export const appRouter = router({
         });
 
         try {
-          await client.upsertSiteConfiguration(teamId, siteId, {
+          const siteConfig = await client.getSiteConfiguration(teamId, siteId);
+
+          if (siteConfig) {
+            return client.updateSiteConfiguration(teamId, siteId, {
+              buildHook: {
+                url,
+                id,
+              },
+            });
+          }
+          await client.createSiteConfiguration(teamId, siteId, {
             buildHook: {
               url,
               id,
@@ -186,6 +198,7 @@ export const appRouter = router({
 
         await client.removeBuildToken(teamId, siteId);
         await client.deleteBuildHook(siteId, buildHookId);
+        await client.deleteSiteConfiguration(teamId, siteId);
 
         try {
           await client.deleteEnvironmentVariable({
