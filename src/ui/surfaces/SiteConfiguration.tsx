@@ -10,10 +10,11 @@ import {
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
 import { useNetlifySDK } from "@netlify/sdk/ui/react";
-import { buildHookRequestSchema } from "../../schema/build-hook-schema";
-//import { siteConfigSchema } from "../../schema/site-config-schema";
+import { buildHookSchema } from "../../schema/build-hook-schema";
+import { useEffect, useState } from "react";
 
 export const SiteConfiguration = () => {
+  const [triggerTestRun, setTriggerTestRun] = useState(false);
   const sdk = useNetlifySDK();
   const trpcUtils = trpc.useUtils();
   const siteConfigQuery = trpc.siteConfig.queryConfig.useQuery();
@@ -49,43 +50,109 @@ export const SiteConfiguration = () => {
     siteDisablementMutation.mutate();
   };
 
+  useEffect(() => {
+    if (triggerTestRun) {
+      document
+        .getElementsByTagName("form")[0]
+        ?.dispatchEvent(new Event("submit", { bubbles: true }));
+
+      setTriggerTestRun(false);
+    }
+  }, [triggerTestRun]);
+
   console.log({ stuff: siteConfigQuery.data });
   if (siteConfigQuery.isLoading) {
     return <CardLoader />;
   }
 
+  const onSubmitTest = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    // Triggers the submit of the form in useEffect
+    setTriggerTestRun(true);
+  };
+
+  const onSubmit = (data: {
+    path: string;
+    reportOnly?: boolean | undefined;
+    reportUri?: string | undefined;
+    unsafeEval?: boolean | undefined;
+    excludedPath?: string[] | undefined;
+  }) => {
+    void (async () => {
+      if (triggerTestRun) {
+        setTriggerTestRun(false);
+        await triggerConfigTestMutation.mutateAsync({
+          ...data,
+          isTestBuild: true,
+        });
+      } else {
+        await siteConfigurationMutation.mutateAsync({
+          ...siteConfigQuery?.data?.config,
+          cspConfig: {
+            ...siteConfigQuery?.data?.config?.cspConfig,
+            ...data,
+          },
+        });
+        sdk.requestTermination();
+      }
+    })();
+  };
+
   return (
     <SiteAccessConfigurationSurface>
       <Card>
-        <CardTitle>Dynamic Content Security Policy</CardTitle>
         {siteConfigQuery.data?.enabledForSite ? (
           <>
-            <Button
-              loading={siteDisablementMutation.isPending}
-              onClick={onDisableHandler}
-            >
-              Disable build event handler
-            </Button>
-
-            <Form
-              schema={buildHookRequestSchema}
-              onSubmit={triggerConfigTestMutation.mutateAsync}
-            >
-              <Checkbox
-                name="reportOnly"
-                label="Report Only"
-                helpText="When true, the Content-Security-Policy-Report-Only header is used instead of the Content-Security-Policy header."
-              />
+            <CardTitle>Disable for site</CardTitle>
+            <div>
+              <p>
+                Disabling this affects the Content-Security-Policy header of
+                future deploys.
+              </p>
+              <Button
+                className="tw-mt-4"
+                loading={siteDisablementMutation.isPending}
+                onClick={onDisableHandler}
+                variant="danger"
+              >
+                Disable
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <CardTitle>Enable for site</CardTitle>
+            <div>
+              <p>
+                Enabling affects the Content-Security-Policy header of future
+                deploys.
+              </p>
+              <Button
+                className="tw-mt-4"
+                loading={triggerConfigTestMutation.isPending}
+                onClick={onEnableHandler}
+              >
+                Enable
+              </Button>
+            </div>
+          </>
+        )}
+      </Card>
+      {siteConfigQuery.data?.enabledForSite && (
+        <Card>
+          <CardTitle>Configuration</CardTitle>
+          <Form
+            schema={buildHookSchema}
+            onSubmit={onSubmit}
+            defaultValues={siteConfigQuery.data.config?.cspConfig || {}}
+            loading={siteConfigurationMutation.isPending}
+          >
+            <div className="tw-mt-4">
               <FormField
                 name="reportUri"
                 type="text"
                 helpText="The relative or absolute URL to report any violations. If not defined, violations are reported to the __csp-violations function, which is deployed by this integration."
                 label="Report URI"
-              />
-              <Checkbox
-                name="unsafeEval"
-                label="Unsafe Eval"
-                helpText="When true, adds the 'unsafe-eval' source to the CSP for easier adoption. Set to false to have a safer policy if your code and code dependencies do not use eval()."
               />
               <FormField
                 name="path"
@@ -99,6 +166,19 @@ export const SiteConfiguration = () => {
                 helpText="The glob expressions of path(s) that *should not* invoke the integration's edge function, separated by newlines. Common non-html filetype extensions (*.css, *.js, *.svg, etc) are already excluded."
                 label="Exluded Path"
               />
+              <div className="tw-mt-4">
+                <Checkbox
+                  name="unsafeEval"
+                  label="Unsafe Eval"
+                  helpText="When true, adds the 'unsafe-eval' source to the CSP for easier adoption. Set to false to have a safer policy if your code and code dependencies do not use eval()."
+                />
+                <Checkbox
+                  name="reportOnly"
+                  label="Report Only"
+                  helpText="When true, the Content-Security-Policy-Report-Only header is used instead of the Content-Security-Policy header."
+                />
+              </div>
+              <hr />
               <p>
                 Test your configuration on a draft Deploy Preview to inspect
                 your CSP before going live. This deploy will not publish to
@@ -106,30 +186,22 @@ export const SiteConfiguration = () => {
               </p>
               <Button
                 loading={triggerConfigTestMutation.isPending}
-                onClick={() => triggerConfigTestMutation.mutateAsync()}
+                type="submit"
+                onClick={onSubmitTest}
+                className="tw-mt-4"
+                level="secondary"
               >
                 Test on Deploy Preview
               </Button>
+              <hr />
+
               <p>
                 After saving, your configuration will apply to future deploys.
               </p>
-            </Form>
-          </>
-        ) : (
-          <>
-            <p>
-              Enabling or disabling this extension affects the
-              Content-Security-Policy header of future deploys.
-            </p>
-            <Button
-              loading={siteEnablementMutation.isPending}
-              onClick={onEnableHandler}
-            >
-              Enable
-            </Button>
-          </>
-        )}
-      </Card>
+            </div>
+          </Form>
+        </Card>
+      )}
     </SiteAccessConfigurationSurface>
   );
 };

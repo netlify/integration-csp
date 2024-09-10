@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { procedure, router } from "./trpc";
 import { siteConfigSchema } from "../schema/site-config-schema";
-import { buildHookRequestSchema } from "../schema/build-hook-schema";
+import { buildHookTestRequestSchema } from "../schema/build-hook-schema";
 import { CSP_EXTENSION_ENABLED } from "../index";
 
 export const appRouter = router({
@@ -50,7 +50,7 @@ export const appRouter = router({
     ),
 
     mutateTriggerConfigTest: procedure
-      .input(buildHookRequestSchema)
+      .input(buildHookTestRequestSchema)
       .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
         if (!teamId || !siteId) {
           throw new TRPCError({
@@ -87,6 +87,8 @@ export const appRouter = router({
         });
 
         console.log(`Triggered build for ${siteId} with status ${res.status}.`);
+
+        return;
       }),
 
     mutateConfig: procedure
@@ -100,7 +102,12 @@ export const appRouter = router({
         }
 
         try {
-          await client.upsertSiteConfiguration(teamId, siteId, input);
+          const siteConfig = await client.getSiteConfiguration(teamId, siteId);
+
+          if (siteConfig) {
+            return client.updateSiteConfiguration(teamId, siteId, input);
+          }
+          await client.createSiteConfiguration(teamId, siteId, input);
         } catch (e) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
@@ -108,6 +115,8 @@ export const appRouter = router({
             cause: e,
           });
         }
+
+        return;
       }),
 
     mutateEnablement: procedure.mutation(
@@ -160,6 +169,7 @@ export const appRouter = router({
             cause: e,
           });
         }
+        return;
       }
     ),
     mutateDisablement: procedure.mutation(
