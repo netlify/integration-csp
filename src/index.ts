@@ -65,9 +65,10 @@ extension.addBuildEventHandler(
     // 1. Incoming hook body
     // 2. Build context
     // 3. Plugin options - realistically won't ever be called in this context
-
     // @ts-ignore TODO: Deal with it later
     let { config } = buildContext ?? opts;
+    console.log("HERE COMES THE CONFIG");
+    console.log({ config });
     let tempConfig = false;
 
     if (process.env.INCOMING_HOOK_BODY) {
