@@ -2,25 +2,27 @@
 import { NetlifyExtension, z } from "@netlify/sdk";
 import { onPreBuild } from "./hooks";
 
-const siteConfigSchema = z.object({
+export const cspConfigSchema = z
+  .object({
+    reportOnly: z.boolean().optional(),
+    reportUri: z.string().url().optional(),
+    unsafeEval: z.boolean().optional(),
+    path: z.array(z.string()),
+    excludedPath: z.array(z.string()).optional(),
+  })
+  .optional();
+
+export const siteConfigSchema = z.object({
   buildHook: z
     .object({
       url: z.string(),
       id: z.string(),
     })
     .optional(),
-  cspConfig: z
-    .object({
-      reportOnly: z.boolean(),
-      reportUri: z.string(),
-      unsafeEval: z.boolean(),
-      path: z.string().array(),
-      excludedPath: z.string().array(),
-    })
-    .optional(),
+  cspConfig: cspConfigSchema,
 });
 
-const previewBuildConfigSchema = z.object({
+export const previewBuildConfigSchema = z.object({
   reportOnly: z.boolean(),
   reportUri: z.string(),
   unsafeEval: z.boolean(),
@@ -29,7 +31,7 @@ const previewBuildConfigSchema = z.object({
   isTestBuild: z.boolean(),
 });
 
-const buildConfigSchema = z.object({
+export const buildConfigSchema = z.object({
   reportOnly: z.boolean().optional(),
   reportUri: z.string().optional(),
   unsafeEval: z.boolean().optional(),
@@ -37,38 +39,33 @@ const buildConfigSchema = z.object({
   excludedPath: z.string().array().optional(),
 });
 
-const buildContextSchema = z.object({
-  config: siteConfigSchema.shape.cspConfig,
-});
-
 const extension = new NetlifyExtension({
   siteConfigSchema,
   buildConfigSchema,
-  buildContextSchema,
+  buildContextSchema: siteConfigSchema,
 });
 
 export const CSP_EXTENSION_ENABLED = "CSP_EXTENSION_ENABLED";
 
 extension.addBuildEventHandler(
   "onPreBuild",
-  ({ buildContext, netlifyConfig, utils, constants, ...opts }) => {
-    if (
-      !process.env[CSP_EXTENSION_ENABLED] ||
-      process.env[CSP_EXTENSION_ENABLED] === "false"
-    ) {
-      // The build event only runs if it has been configured to run on a site, indicated by setting this env var
+  ({ buildContext, netlifyConfig, utils, constants, buildConfig, ...opts }) => {
+    const { cspConfig, buildHook } = buildContext ?? {};
+    console.log({
+      cspConfig,
+      buildHook,
+      process: process.env.INCOMING_HOOK_BODY,
+    });
+    if (!process.env.INCOMING_HOOK_BODY && !cspConfig && !buildHook?.url) {
+      console.log("CSP Extension not enabled for this site.");
       return;
     }
-    // TODO: Add safeguard as to whether this should run on a site, using an environment variable and then after that, using a config
+    let config = cspConfig ?? buildConfig ?? {};
 
     // We lean on this favoured order of precedence:
     // 1. Incoming hook body
     // 2. Build context
     // 3. Plugin options - realistically won't ever be called in this context
-    // @ts-ignore TODO: Deal with it later
-    let { config } = buildContext ?? opts;
-    console.log("HERE COMES THE CONFIG");
-    console.log({ config });
     let tempConfig = false;
 
     if (process.env.INCOMING_HOOK_BODY) {
@@ -107,7 +104,7 @@ extension.addBuildEventHandler(
     }
 
     // Ensure if path is not present, that it is set to "/*" as a default
-    if (!config.path) {
+    if (!config?.path) {
       config.path = ["/*"];
     }
 
@@ -132,20 +129,20 @@ extension.addBuildEventHandler(
   }
 );
 
-// @ts-ignore TODO: fix types!
 extension.addBuildEventContext(async ({ site_config }) => {
-  if (site_config.cspConfig) {
-    return {
-      config: site_config.cspConfig,
-    };
-  }
-
-  return undefined;
+  console.log({ site_config });
+  return site_config.config ?? undefined;
 });
 
+type EventQueryStringParameters = {
+  siteId?: string;
+  teamId?: string;
+  [key: string]: string | undefined;
+};
+
 extension.onUninstall(async ({ queryStringParameters }, { client }) => {
-  // @ts-ignore TODO: fix types!
-  const { siteId, teamId } = queryStringParameters;
+  const { siteId, teamId } =
+    queryStringParameters as EventQueryStringParameters;
   if (!siteId || !teamId) {
     return {
       statusCode: 500,
@@ -153,22 +150,13 @@ extension.onUninstall(async ({ queryStringParameters }, { client }) => {
     };
   }
 
-  const {
-    // @ts-ignore TODO: fix types!
-    config: { buildHook },
-  } = await client.getSiteConfiguration(teamId, siteId);
+  const siteConfig = await client.getSiteConfiguration(teamId, siteId);
 
-  try {
-    await client.deleteEnvironmentVariable({
-      accountId: teamId,
-      siteId,
-      key: CSP_EXTENSION_ENABLED,
-    });
-  } catch (e) {
-    console.error(
-      `Failed to remove ${CSP_EXTENSION_ENABLED} env var for site: ${siteId} and team: ${teamId}`
-    );
+  if (!siteConfig) {
+    throw new Error("Failed to get site configuration");
   }
+
+  const { buildHook } = siteConfig.config;
 
   try {
     const { id: buildHookId } = buildHook ?? {};

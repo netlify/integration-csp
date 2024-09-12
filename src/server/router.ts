@@ -1,8 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { procedure, router } from "./trpc";
-import { siteConfigSchema } from "../schema/site-config-schema";
-import { buildHookTestRequestSchema } from "../schema/build-hook-schema";
-import { CSP_EXTENSION_ENABLED } from "../index";
+import { previewBuildConfigSchema, siteConfigSchema } from "../index";
 
 export const appRouter = router({
   siteConfig: {
@@ -14,22 +12,13 @@ export const appRouter = router({
             message: "teamId and siteId are required",
           });
         }
+
         let siteConfig;
+
         try {
           siteConfig = await client.getSiteConfiguration(teamId, siteId);
         } catch (error) {}
 
-        const envVars = await client.getEnvironmentVariables({
-          accountId: teamId,
-          siteId,
-        });
-
-        // TODO: Check if we use the all context
-        const enabledVar = envVars
-          .find((val) => val.key === CSP_EXTENSION_ENABLED)
-          ?.values.find((val) => val.context === "all");
-
-        // TODO: types
         let configData;
 
         if (siteConfig) {
@@ -42,15 +31,25 @@ export const appRouter = router({
             );
           }
         }
+
+        const { path, excludedPath, ...cspConfig } =
+          configData?.data?.cspConfig ?? {};
+
         return {
-          config: configData?.data,
-          enabledForSite: !!enabledVar?.value && enabledVar.value !== "false",
+          config: {
+            ...configData?.data,
+            cspConfig: {
+              ...cspConfig,
+              path: path?.join("\n"),
+              excludedPath: excludedPath?.join("\n"),
+            },
+          },
         };
       }
     ),
 
     mutateTriggerConfigTest: procedure
-      .input(buildHookTestRequestSchema)
+      .input(previewBuildConfigSchema)
       .mutation(async ({ ctx: { teamId, siteId, client }, input }) => {
         if (!teamId || !siteId) {
           throw new TRPCError({
@@ -102,12 +101,9 @@ export const appRouter = router({
         }
 
         try {
-          const siteConfig = await client.getSiteConfiguration(teamId, siteId);
-
-          if (siteConfig) {
-            return client.updateSiteConfiguration(teamId, siteId, input);
-          }
-          await client.createSiteConfiguration(teamId, siteId, input);
+          await client.upsertSiteConfiguration(teamId, siteId, {
+            ...input,
+          });
         } catch (e) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
@@ -130,14 +126,6 @@ export const appRouter = router({
 
         const { token } = await client.generateBuildToken(siteId, teamId);
         await client.setBuildToken(teamId, siteId, token);
-        //  TODO: Setup a safeguard for this extension to ensure they are only enabled where CSP is configured to run
-
-        await client.createOrUpdateVariable({
-          accountId: teamId,
-          siteId,
-          key: CSP_EXTENSION_ENABLED,
-          value: "true",
-        });
 
         const { url, id } = await client.createBuildHook(siteId, {
           title: "CSP Configuration Tests",
@@ -206,20 +194,15 @@ export const appRouter = router({
           buildHook: { id: buildHookId },
         } = configData.data;
 
-        await client.removeBuildToken(teamId, siteId);
-        await client.deleteBuildHook(siteId, buildHookId);
-        await client.deleteSiteConfiguration(teamId, siteId);
-
         try {
-          await client.deleteEnvironmentVariable({
-            accountId: teamId,
-            siteId,
-            key: CSP_EXTENSION_ENABLED,
-          });
+          await client.removeBuildToken(teamId, siteId);
+          await client.deleteBuildHook(siteId, buildHookId);
+          await client.deleteSiteConfiguration(teamId, siteId);
         } catch (e) {
-          console.error(
-            `Failed to remove ${CSP_EXTENSION_ENABLED} env var for site: ${siteId} and team: ${teamId}`
-          );
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to disable extension for site",
+          });
         }
       }
     ),

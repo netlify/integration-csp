@@ -10,7 +10,7 @@
   "dependencies": {
     "@netlify/functions": "^2.8.1",
     "@netlify/plugin-csp-nonce": "^1.2.9",
-    "@netlify/sdk": "^2.0.2",
+    "@netlify/sdk": "^2.2.4",
     "@tanstack/react-query": "^5.55.4",
     "@trpc/client": "11.0.0-rc.477",
     "@trpc/react-query": "11.0.0-rc.477",

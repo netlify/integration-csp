@@ -10,8 +10,16 @@ import {
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
 import { useNetlifySDK } from "@netlify/sdk/ui/react";
-import { buildHookSchema } from "../../schema/build-hook-schema";
 import { useEffect, useState } from "react";
+import { z } from "zod";
+
+export const cspConfigFormSchema = z.object({
+  reportOnly: z.boolean().optional(),
+  reportUri: z.string().url().optional(),
+  unsafeEval: z.boolean().optional(),
+  path: z.string(),
+  excludedPath: z.string().optional(),
+});
 
 export const SiteConfiguration = () => {
   const [triggerTestRun, setTriggerTestRun] = useState(false);
@@ -71,18 +79,28 @@ export const SiteConfiguration = () => {
     setTriggerTestRun(true);
   };
 
-  const onSubmit = (data: {
-    path: string;
-    reportOnly?: boolean | undefined;
-    reportUri?: string | undefined;
-    unsafeEval?: boolean | undefined;
-    excludedPath?: string[] | undefined;
-  }) => {
+  type CspConfigFormData = z.infer<typeof cspConfigFormSchema>;
+
+  const onSubmit = ({
+    path: newPath,
+    excludedPath: newExcludedPath,
+    ...data
+  }: CspConfigFormData) => {
+    const path = newPath === "" ? [] : newPath.split("\n");
+    const excludedPath =
+      !newExcludedPath || newExcludedPath === ""
+        ? []
+        : newExcludedPath.split("\n");
+
     void (async () => {
       if (triggerTestRun) {
         setTriggerTestRun(false);
         await triggerConfigTestMutation.mutateAsync({
-          ...data,
+          reportOnly: data.reportOnly ?? false,
+          reportUri: data.reportUri ?? "",
+          unsafeEval: data.unsafeEval ?? false,
+          path,
+          excludedPath,
           isTestBuild: true,
         });
       } else {
@@ -90,18 +108,22 @@ export const SiteConfiguration = () => {
           ...siteConfigQuery?.data?.config,
           cspConfig: {
             ...siteConfigQuery?.data?.config?.cspConfig,
-            ...data,
+            reportOnly: data.reportOnly ?? false,
+            reportUri: data.reportUri,
+            unsafeEval: data.unsafeEval ?? false,
+            path,
+            excludedPath,
           },
         });
         sdk.requestTermination();
       }
     })();
   };
-
+  console.log("heyyy");
   return (
     <SiteAccessConfigurationSurface>
       <Card>
-        {siteConfigQuery.data?.enabledForSite ? (
+        {siteConfigQuery.data?.config?.buildHook ? (
           <>
             <CardTitle>Disable for site</CardTitle>
             <div>
@@ -138,11 +160,11 @@ export const SiteConfiguration = () => {
           </>
         )}
       </Card>
-      {siteConfigQuery.data?.enabledForSite && (
+      {siteConfigQuery.data?.config?.buildHook && (
         <Card>
           <CardTitle>Configuration</CardTitle>
           <Form
-            schema={buildHookSchema}
+            schema={cspConfigFormSchema}
             onSubmit={onSubmit}
             defaultValues={siteConfigQuery.data.config?.cspConfig || {}}
             loading={siteConfigurationMutation.isPending}
