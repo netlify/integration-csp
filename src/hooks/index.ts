@@ -65,6 +65,15 @@ export const onPreBuild = async ({
   } else {
     console.log(`  Using ${config.reportUri} as report-uri directive...`);
   }
-
+  utils.status.show({
+    // Optional. Default to the plugin’s name followed by a generic title.
+    title: "CSP Extension",
+    // Required.
+    summary: "Successfully ran the CSP Extension",
+    // Optional. Empty by default.
+    text: `CSP Extension ran successfully to set up the CSP Nonce and Violations logging functions for path ${config.path?.join(
+      ", "
+    )}. With the following config: ${configString}`,
+  });
   console.log(`  Done.`);
 };

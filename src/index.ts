@@ -51,11 +51,7 @@ extension.addBuildEventHandler(
   "onPreBuild",
   ({ buildContext, netlifyConfig, utils, constants, buildConfig, ...opts }) => {
     const { cspConfig, buildHook } = buildContext ?? {};
-    console.log({
-      cspConfig,
-      buildHook,
-      process: process.env.INCOMING_HOOK_BODY,
-    });
+
     if (!process.env.INCOMING_HOOK_BODY && !cspConfig && !buildHook?.url) {
       console.log("CSP Extension not enabled for this site.");
       return;
