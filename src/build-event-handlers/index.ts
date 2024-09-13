@@ -1,18 +1,30 @@
 import * as fs from "fs";
 import * as path from "path";
+import {
+  NetlifyPluginUtils,
+  NetlifyConfig,
+  NetlifyPluginConstants,
+} from "@netlify/build";
+
+interface onPreBuildArgs {
+  constants: NetlifyPluginConstants;
+  netlifyConfig: NetlifyConfig;
+  utils: NetlifyPluginUtils;
+  config: {
+    reportOnly?: boolean | undefined;
+    reportUri?: string | undefined;
+    unsafeEval?: boolean | undefined;
+    path?: string[] | undefined;
+    excludedPath?: string[] | undefined;
+  };
+}
 
 export const onPreBuild = async ({
-  // @ts-ignore TODO: Deal with it later
   config,
-  // @ts-ignore TODO: Deal with it later
-
   netlifyConfig,
-  // @ts-ignore TODO: Deal with it later
-
   utils,
-  // @ts-ignore TODO: Deal with it later
   constants,
-}) => {
+}: onPreBuildArgs) => {
   const configString = JSON.stringify(config, null, 2);
   const { build } = netlifyConfig;
   const { INTERNAL_FUNCTIONS_SRC, INTERNAL_EDGE_FUNCTIONS_SRC, PACKAGE_PATH } =
@@ -66,14 +78,11 @@ export const onPreBuild = async ({
     console.log(`  Using ${config.reportUri} as report-uri directive...`);
   }
   utils.status.show({
-    // Optional. Default to the plugin’s name followed by a generic title.
     title: "CSP Extension",
-    // Required.
     summary: "Successfully ran the CSP Extension",
-    // Optional. Empty by default.
-    text: `CSP Extension ran successfully to set up the CSP Nonce and Violations logging functions for path ${config.path?.join(
+    text: `CSP Extension ran successfully to set up the CSP Nonce and Violations logging functions for path _${config.path?.join(
       ", "
-    )}. With the following config: ${configString}`,
+    )}_. With the following config: _${configString}_`,
   });
   console.log(`  Done.`);
 };

@@ -1,5 +1,3 @@
-# Netlify CSP Extension
-
 Use a [nonce](https://content-security-policy.com/nonce/) for the `script-src` directive of your Content Security Policy (CSP) to help prevent [cross-site scripting (XSS)](https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks#cross-site_scripting_xss) attacks.
 
 This extension deploys an edge function that adds a response header and transforms the HTML response body to contain a unique nonce on every request, along with an optional function to log CSP violations.
@@ -12,35 +10,35 @@ You can use this extension whether or not your site already has a CSP in place. 
 
 ## Configuration options
 
-#### `reportOnly`
+- #### `reportOnly`
 
-_Default: `true`_.
+  _Default: `true`_.
 
-When true, uses the `Content-Security-Policy-Report-Only` header instead of the `Content-Security-Policy` header. Setting `reportOnly` to `true` is useful for testing the CSP with real production traffic without actually blocking resources. Be sure to monitor your logging function to observe potential violations.
+  When true, uses the `Content-Security-Policy-Report-Only` header instead of the `Content-Security-Policy` header. Setting `reportOnly` to `true` is useful for testing the CSP with real production traffic without actually blocking resources. Be sure to monitor your logging function to observe potential violations.
 
-#### `reportUri`
+- #### `reportUri`
 
-_Default: `undefined`_.
+  _Default: `undefined`_.
 
-The relative or absolute URL to report any violations. If left undefined, violations are reported to the `__csp-violations` function, which this extension deploys. If your site already has a `report-uri` directive defined in its CSP header, then that value will take precedence.
+  The relative or absolute URL to report any violations. If left undefined, violations are reported to the `__csp-violations` function, which this extension deploys. If your site already has a `report-uri` directive defined in its CSP header, then that value will take precedence.
 
-#### `unsafeEval`
+- #### `unsafeEval`
 
-_Default: `true`._
+  _Default: `true`._
 
-When true, adds `'unsafe-eval'` to the CSP for easier adoption. Set to `false` to have a safer policy if your code and code dependencies does not use `eval()`.
+  When true, adds `'unsafe-eval'` to the CSP for easier adoption. Set to `false` to have a safer policy if your code and code dependencies does not use `eval()`.
 
-#### `path`
+- #### `path`
 
-_Default: `/*`._
+  _Default: `/*`._
 
-The glob expressions of path(s) that should invoke the CSP nonce edge function. Can be a string or array of strings.
+  The glob expressions of path(s) that should invoke the CSP nonce edge function. Can be a string or array of strings.
 
-#### `excludedPath`
+- #### `excludedPath`
 
-_Default: `[]`_
+  _Default: `[]`_
 
-The glob expressions of path(s) that _should not_ invoke the CSP nonce edge function. Must be an array of strings. This value gets spread with common non-html filetype extensions (`*.css`, `*.js`, `*.svg`, etc).
+  The glob expressions of path(s) that _should not_ invoke the CSP nonce edge function. Must be an array of strings. This value gets spread with common non-html filetype extensions (`*.css`, `*.js`, `*.svg`, etc).
 
 ## Debugging
 

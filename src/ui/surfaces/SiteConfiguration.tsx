@@ -68,7 +68,6 @@ export const SiteConfiguration = () => {
     }
   }, [triggerTestRun]);
 
-  console.log({ stuff: siteConfigQuery.data });
   if (siteConfigQuery.isLoading) {
     return <CardLoader />;
   }
@@ -86,7 +85,11 @@ export const SiteConfiguration = () => {
     excludedPath: newExcludedPath,
     ...data
   }: CspConfigFormData) => {
-    const path = newPath === "" ? [] : newPath.split("\n");
+    const path =
+      newPath === ""
+        ? []
+        : newPath.split("\n").filter((path) => path.trim() !== "");
+
     const excludedPath =
       !newExcludedPath || newExcludedPath === ""
         ? []
@@ -119,7 +122,7 @@ export const SiteConfiguration = () => {
       }
     })();
   };
-  console.log("heyyy");
+
   return (
     <SiteAccessConfigurationSurface>
       <Card>
@@ -178,7 +181,7 @@ export const SiteConfiguration = () => {
               />
               <FormField
                 name="path"
-                type="text"
+                type="textarea"
                 helpText="The glob expressions of path(s) that should invoke the integration's edge function, separated by newlines."
                 label="Path"
               />

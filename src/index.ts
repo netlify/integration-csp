@@ -1,6 +1,6 @@
 // Documentation: https://github.com/netlify/sdk
 import { NetlifyExtension, z } from "@netlify/sdk";
-import { onPreBuild } from "./hooks";
+import { onPreBuild } from "./build-event-handlers";
 
 export const cspConfigSchema = z
   .object({
@@ -126,7 +126,6 @@ extension.addBuildEventHandler(
 );
 
 extension.addBuildEventContext(async ({ site_config }) => {
-  console.log({ site_config });
   return site_config.config ?? undefined;
 });
 
