@@ -135,29 +135,34 @@ type EventQueryStringParameters = {
   [key: string]: string | undefined;
 };
 
-extension.onUninstall(async ({ queryStringParameters }, { client }) => {
-  const { siteId, teamId } =
-    queryStringParameters as EventQueryStringParameters;
+extension.onUninstall(async (_req, { client, siteId, teamId }) => {
+  console.log({ siteId, teamId });
   if (!siteId || !teamId) {
     return {
       statusCode: 500,
       body: "Missing siteId and/or teamId",
     };
   }
-
+  console.log("here");
   const siteConfig = await client.getSiteConfiguration(teamId, siteId);
+  console.log("here2");
 
   if (!siteConfig) {
     throw new Error("Failed to get site configuration");
   }
+  console.log("here3");
+  console.log(siteConfig);
 
   const { buildHook } = siteConfig.config;
+  console.log("here4");
+  console.log(buildHook);
 
   try {
     const { id: buildHookId } = buildHook ?? {};
 
     if (buildHookId) {
       await client.removeBuildToken(teamId, siteId);
+
       await client.deleteBuildHook(siteId, buildHookId);
     }
   } catch (e) {
