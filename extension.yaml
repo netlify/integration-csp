@@ -6,4 +6,4 @@ config:
 
   ui:
     surfaces:
-      - extension-site-access-configuration
+      - extension-site-build-and-deploy-configuration

@@ -6,14 +6,14 @@ import {
   Checkbox,
   Form,
   FormField,
-  SiteAccessConfigurationSurface,
+  SiteBuildDeployConfigurationSurface,
 } from "@netlify/sdk/ui/react/components";
 import { trpc } from "../trpc";
 import { useNetlifySDK } from "@netlify/sdk/ui/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-export const cspConfigFormSchema = z.object({
+const cspConfigFormSchema = z.object({
   reportOnly: z.boolean().optional(),
   reportUri: z.string().url().optional(),
   unsafeEval: z.boolean().optional(),
@@ -95,10 +95,10 @@ export const SiteConfiguration = () => {
         ? []
         : newExcludedPath.split("\n");
 
-    void (async () => {
+    void (() => {
       if (triggerTestRun) {
         setTriggerTestRun(false);
-        await triggerConfigTestMutation.mutateAsync({
+        triggerConfigTestMutation.mutateAsync({
           reportOnly: data.reportOnly ?? false,
           reportUri: data.reportUri ?? "",
           unsafeEval: data.unsafeEval ?? false,
@@ -107,7 +107,7 @@ export const SiteConfiguration = () => {
           isTestBuild: true,
         });
       } else {
-        await siteConfigurationMutation.mutateAsync({
+        siteConfigurationMutation.mutateAsync({
           ...siteConfigQuery?.data?.config,
           cspConfig: {
             ...siteConfigQuery?.data?.config?.cspConfig,
@@ -124,7 +124,7 @@ export const SiteConfiguration = () => {
   };
 
   return (
-    <SiteAccessConfigurationSurface>
+    <SiteBuildDeployConfigurationSurface>
       <Card>
         {siteConfigQuery.data?.config?.buildHook ? (
           <>
@@ -154,7 +154,7 @@ export const SiteConfiguration = () => {
               </p>
               <Button
                 className="tw-mt-4"
-                loading={triggerConfigTestMutation.isPending}
+                loading={siteEnablementMutation.isPending}
                 onClick={onEnableHandler}
               >
                 Enable
@@ -227,6 +227,6 @@ export const SiteConfiguration = () => {
           </Form>
         </Card>
       )}
-    </SiteAccessConfigurationSurface>
+    </SiteBuildDeployConfigurationSurface>
   );
 };

@@ -1,6 +1,35 @@
 import { TRPCError } from "@trpc/server";
 import { procedure, router } from "./trpc";
-import { previewBuildConfigSchema, siteConfigSchema } from "../index";
+import { z } from "zod";
+
+export const previewBuildConfigSchema = z.object({
+  reportOnly: z.boolean(),
+  reportUri: z.string(),
+  unsafeEval: z.boolean(),
+  path: z.string().array(),
+  excludedPath: z.string().array(),
+  isTestBuild: z.boolean(),
+});
+
+export const cspConfigSchema = z
+  .object({
+    reportOnly: z.boolean().optional(),
+    reportUri: z.string().url().optional(),
+    unsafeEval: z.boolean().optional(),
+    path: z.array(z.string()),
+    excludedPath: z.array(z.string()).optional(),
+  })
+  .optional();
+
+export const siteConfigSchema = z.object({
+  buildHook: z
+    .object({
+      url: z.string(),
+      id: z.string(),
+    })
+    .optional(),
+  cspConfig: cspConfigSchema,
+});
 
 export const appRouter = router({
   siteConfig: {

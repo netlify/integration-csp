@@ -18,14 +18,14 @@ export const App = () => {
           fetch,
         }),
       ],
-    }),
+    })
   );
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <SurfaceRouter>
-          <SurfaceRoute surface={Surfaces.SiteAccessConfiguration}>
+          <SurfaceRoute surface={Surfaces.SiteBuildDeployConfiguration}>
             <SiteConfiguration />
           </SurfaceRoute>
         </SurfaceRouter>
