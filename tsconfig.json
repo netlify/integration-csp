@@ -1,11 +1,12 @@
 {
-    "files": [],
-    "references": [
-        {
-            "path": "./tsconfig.ui.json"
-        },
-        {
-            "path": "./tsconfig.backend.json"
-        }
-    ]
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "rootDir": "."
+  },
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
