@@ -12,8 +12,8 @@ importers:
         specifier: ^29.54.2
         version: 29.54.2(@opentelemetry/api@1.8.0)(@types/node@22.5.4)
       '@netlify/functions':
-        specifier: ^2.8.1
-        version: 2.8.1
+        specifier: ^2.8.2
+        version: 2.8.2
       '@netlify/plugin-csp-nonce':
         specifier: ^1.2.9
         version: 1.2.10
@@ -1273,8 +1273,8 @@ packages:
     resolution: {integrity: sha512-6G92AlcpFrQG72XU8YH8pg94eDnq7+Q0YJhb8x4qNpdGsvuzvrfHWBmqFGp/Yshmv4wex9lpsTRZOocdrA2erQ==}
     engines: {node: '>=14.0.0'}
 
-  '@netlify/functions@2.8.1':
-    resolution: {integrity: sha512-+6wtYdoz0yE06dSa9XkP47tw5zm6g13QMeCwM3MmHx1vn8hzwFa51JtmfraprdkL7amvb7gaNM+OOhQU1h6T8A==}
+  '@netlify/functions@2.8.2':
+    resolution: {integrity: sha512-DeoAQh8LuNPvBE4qsKlezjKj0PyXDryOFJfJKo3Z1qZLKzQ21sT314KQKPVjfvw6knqijj+IO+0kHXy/TJiqNA==}
     engines: {node: '>=14.0.0'}
 
   '@netlify/git-utils@5.1.1':
@@ -1423,12 +1423,12 @@ packages:
     engines: {node: '>= 18.19.0'}
     hasBin: true
 
-  '@netlify/serverless-functions-api@1.19.1':
-    resolution: {integrity: sha512-2KYkyluThg1AKfd0JWI7FzpS4A/fzVVGYIf6AM4ydWyNj8eI/86GQVLeRgDoH7CNOxt243R5tutWlmHpVq0/Ew==}
-    engines: {node: '>=18.0.0'}
-
   '@netlify/serverless-functions-api@1.23.0':
     resolution: {integrity: sha512-0SwlMeqcwPzvRgE6aJczAiEz27hXl4thd46PECN3bX3FvAEuqpSTjQefuF3PEycdnWhCvTAKe1OW+Uv7ZT3pug==}
+    engines: {node: '>=18.0.0'}
+
+  '@netlify/serverless-functions-api@1.26.1':
+    resolution: {integrity: sha512-q3L9i3HoNfz0SGpTIS4zTcKBbRkxzCRpd169eyiTuk3IwcPC3/85mzLHranlKo2b+HYT0gu37YxGB45aD8A3Tw==}
     engines: {node: '>=18.0.0'}
 
   '@netlify/tailwind-config@2.0.0':
@@ -8422,9 +8422,9 @@ snapshots:
     dependencies:
       is-promise: 4.0.0
 
-  '@netlify/functions@2.8.1':
+  '@netlify/functions@2.8.2':
     dependencies:
-      '@netlify/serverless-functions-api': 1.19.1
+      '@netlify/serverless-functions-api': 1.26.1
 
   '@netlify/git-utils@5.1.1':
     dependencies:
@@ -8534,7 +8534,7 @@ snapshots:
 
   '@netlify/sdk--ui-functions@1.0.4(@trpc/server@11.0.0-rc.477)':
     dependencies:
-      '@netlify/functions': 2.8.1
+      '@netlify/functions': 2.8.2
       '@netlify/sdk--extension-api-client': 2.2.0
       '@trpc/server': 11.0.0-rc.477
 
@@ -8566,7 +8566,7 @@ snapshots:
       '@graphql-tools/utils': 10.5.4(graphql@16.9.0)
       '@graphql-tools/wrap': 10.0.5(graphql@16.9.0)
       '@netlify/content-engine': 0.8.2
-      '@netlify/functions': 2.8.1
+      '@netlify/functions': 2.8.2
       '@netlify/integrations': 0.6.0
       '@netlify/sdk--extension-api-client': 0.1.1
       '@sindresorhus/slugify': 2.2.1
@@ -8614,7 +8614,7 @@ snapshots:
       '@graphql-tools/utils': 10.5.4(graphql@16.9.0)
       '@graphql-tools/wrap': 10.0.5(graphql@16.9.0)
       '@netlify/content-engine': 1.2.0(@google-cloud/storage@5.20.5)
-      '@netlify/functions': 2.8.1
+      '@netlify/functions': 2.8.2
       '@netlify/integrations': 0.6.0
       '@netlify/sdk--extension-api-client': 2.2.0
       '@netlify/sdk--ui-core': 1.1.0
@@ -8669,12 +8669,12 @@ snapshots:
       - ts-node
       - utf-8-validate
 
-  '@netlify/serverless-functions-api@1.19.1':
+  '@netlify/serverless-functions-api@1.23.0':
     dependencies:
       '@netlify/node-cookies': 0.1.0
       urlpattern-polyfill: 8.0.2
 
-  '@netlify/serverless-functions-api@1.23.0':
+  '@netlify/serverless-functions-api@1.26.1':
     dependencies:
       '@netlify/node-cookies': 0.1.0
       urlpattern-polyfill: 8.0.2
