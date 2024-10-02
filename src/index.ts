@@ -50,6 +50,9 @@ export const CSP_EXTENSION_ENABLED = "CSP_EXTENSION_ENABLED";
 extension.addBuildEventHandler(
   "onPreBuild",
   ({ buildContext, netlifyConfig, utils, constants, buildConfig, ...opts }) => {
+    if (!CSP_EXTENSION_ENABLED) {
+      return;
+    }
     const { cspConfig, buildHook } = buildContext ?? {};
 
     if (!process.env.INCOMING_HOOK_BODY && !cspConfig && !buildHook?.url) {
@@ -75,7 +78,7 @@ extension.addBuildEventHandler(
           tempConfig = true;
         } else {
           console.log(
-            "Incoming hook is present, but not a configuration object for CSP."
+            "Incoming hook is present, but not a configuration object for CSP.",
           );
         }
       } catch (e) {
@@ -122,7 +125,7 @@ extension.addBuildEventHandler(
     };
 
     return onPreBuild(newOpts);
-  }
+  },
 );
 
 extension.addBuildEventContext(async ({ site_config }) => {
