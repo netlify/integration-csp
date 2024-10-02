@@ -46,8 +46,8 @@ importers:
         version: 3.23.8
     devDependencies:
       '@netlify/netlify-plugin-netlify-extension':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.0.3
+        version: 1.0.3
       '@tsconfig/recommended':
         specifier: ^1.0.7
         version: 1.0.7
@@ -1363,8 +1363,8 @@ packages:
   '@netlify/netlify-design-tokens@6.0.0':
     resolution: {integrity: sha512-ej601PfCL1xRAvUyZNgJ3r+LdaSI3i8w7EjfGkwjYlM8lpKzP9bZyLDmhhfJes0luq4jXDDPBIRs0aky/4seBA==}
 
-  '@netlify/netlify-plugin-netlify-extension@1.0.0':
-    resolution: {integrity: sha512-NFbHA4KzNnLSejnF5hNoP3HcvzHTr9Ew+APbtWwEpO2A0xaMc9mKm06CsgQ0ppYmfLm/kFpUXq2HKLrAsc/O/A==}
+  '@netlify/netlify-plugin-netlify-extension@1.0.3':
+    resolution: {integrity: sha512-EN8U9wuqV/zufDaQsB9gI6K02kUHEi/SAhT6e3KHtcvOsfaEc5qrTM1wQP6HXGdK5977q3OyXgtQy9we6j+HMg==}
 
   '@netlify/node-cookies@0.1.0':
     resolution: {integrity: sha512-OAs1xG+FfLX0LoRASpqzVntVV/RpYkgpI0VrUnw2u0Q1qiZUzcPffxRK8HF3gc4GjuhG5ahOEMJ9bswBiZPq0g==}
@@ -8493,7 +8493,7 @@ snapshots:
 
   '@netlify/netlify-design-tokens@6.0.0': {}
 
-  '@netlify/netlify-plugin-netlify-extension@1.0.0':
+  '@netlify/netlify-plugin-netlify-extension@1.0.3':
     dependencies:
       moize: 6.1.6
       outdent: 0.8.0
