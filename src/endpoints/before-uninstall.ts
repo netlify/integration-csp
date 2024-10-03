@@ -15,17 +15,19 @@ export default withNetlifySDKContext(async (_req, context) => {
     );
     if (siteConfig) {
       const parsedConfig = siteConfigSchema.safeParse(siteConfig.config);
-      if (parsedConfig.success && parsedConfig?.data?.buildHook?.id) {
+      if (parsedConfig.success) {
         // delete the env and build hook
-        try {
-          await context.client.deleteBuildHook(
-            site.id,
-            parsedConfig.data.buildHook.id
-          );
-        } catch (e) {
-          console.error(
-            `Failed to delete build hook ${parsedConfig.data.buildHook.id} for site ${site.id}`
-          );
+        if (parsedConfig?.data?.buildHook?.id) {
+          try {
+            await context.client.deleteBuildHook(
+              site.id,
+              parsedConfig.data.buildHook.id
+            );
+          } catch (e) {
+            console.error(
+              `Failed to delete build hook ${parsedConfig.data.buildHook.id} for site ${site.id}`
+            );
+          }
         }
 
         try {
