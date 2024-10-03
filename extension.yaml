@@ -1,5 +1,5 @@
 config:
-  slug: yl9z8yms-migrate-csp-extension
+  slug: zqi474os-csp-testing-v2
 
   # set this to true to add a global require shim to esbuild. Workaround for https://github.com/evanw/esbuild/issues/1921
   use_cjs_shims: false
