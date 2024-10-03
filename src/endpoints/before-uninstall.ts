@@ -1,7 +1,7 @@
 import { withNetlifySDKContext } from "@netlify/sdk/ui/functions";
 import { siteConfigSchema } from "..";
 
-export default withNetlifySDKContext(async (req, context) => {
+export default withNetlifySDKContext(async (_req, context) => {
   if (!context.teamId) {
     return new Response("teamId is required", { status: 400 });
   }
