@@ -39,7 +39,7 @@ export const buildConfigSchema = z.object({
   excludedPath: z.string().array().optional(),
 });
 
-const extension = new NetlifyExtension({
+export const extension = new NetlifyExtension({
   siteConfigSchema,
   buildConfigSchema,
   buildContextSchema: siteConfigSchema,
@@ -128,11 +128,3 @@ extension.addBuildEventHandler(
 extension.addBuildEventContext(async ({ site_config }) => {
   return site_config.config ?? undefined;
 });
-
-type EventQueryStringParameters = {
-  siteId?: string;
-  teamId?: string;
-  [key: string]: string | undefined;
-};
-
-export { extension };
