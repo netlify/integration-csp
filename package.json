@@ -8,7 +8,7 @@
     "dev": "netlify-extension dev --open"
   },
   "dependencies": {
-    "@netlify/build": "^29.54.2",
+    "@netlify/build": "^29.55.0",
     "@netlify/functions": "^2.8.1",
     "@netlify/plugin-csp-nonce": "^1.2.9",
     "@netlify/sdk": "^2.3.0",
