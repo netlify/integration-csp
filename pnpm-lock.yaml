@@ -48,6 +48,9 @@ importers:
       '@netlify/netlify-plugin-netlify-extension':
         specifier: ^1.0.3
         version: 1.0.3
+      '@tsconfig/node18':
+        specifier: ^18.2.4
+        version: 18.2.4
       '@tsconfig/recommended':
         specifier: ^1.0.7
         version: 1.0.7
@@ -1967,6 +1970,9 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@tsconfig/node18@18.2.4':
+    resolution: {integrity: sha512-5xxU8vVs9/FNcvm3gE07fPbn9tl6tqGGWA9tSlwsUEkBxtRnTsNmwrV8gasZ9F/EobaSv9+nu8AxUKccw77JpQ==}
 
   '@tsconfig/recommended@1.0.7':
     resolution: {integrity: sha512-xiNMgCuoy4mCL4JTywk9XFs5xpRUcKxtWEcMR6FNMtsgewYTIgIR+nvlP4A4iRCAzRsHMnPhvTRrzp4AGcRTEA==}
@@ -9751,6 +9757,8 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
+
+  '@tsconfig/node18@18.2.4': {}
 
   '@tsconfig/recommended@1.0.7': {}
 
