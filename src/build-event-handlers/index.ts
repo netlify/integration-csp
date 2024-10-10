@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import {
-  NetlifyPluginUtils,
-  NetlifyConfig,
-  NetlifyPluginConstants,
+  type NetlifyPluginUtils,
+  type NetlifyConfig,
+  type NetlifyPluginConstants,
 } from "@netlify/build";
 
 interface onPreBuildArgs {

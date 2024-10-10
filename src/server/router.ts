@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { procedure, router } from "./trpc";
+import { procedure, router } from "./trpc.js";
 import { z } from "zod";
 
 export const previewBuildConfigSchema = z.object({

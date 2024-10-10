@@ -1,6 +1,6 @@
 // Documentation: https://github.com/netlify/sdk
 import { NetlifyExtension, z } from "@netlify/sdk";
-import { onPreBuild } from "./build-event-handlers";
+import { onPreBuild } from "./build-event-handlers/index.js";
 
 export const cspConfigSchema = z
   .object({
