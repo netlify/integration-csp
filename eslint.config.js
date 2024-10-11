@@ -4,7 +4,7 @@ import gitignore from "eslint-config-flat-gitignore";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
 import vitest from "@vitest/eslint-plugin";
 import globals from "globals";
-import * as path from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript-eslint";
 import tailwind from "eslint-plugin-tailwindcss";
