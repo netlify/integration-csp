@@ -1,6 +1,6 @@
 // Documentation: https://github.com/netlify/sdk
 import { NetlifyExtension, z } from "@netlify/sdk";
-import { onPreBuild } from "./build-event-handlers/index.js";
+import { createOnPreBuild } from "./build-event-handlers/index.js";
 
 // FIXME(ndhoule): Replace deprecated sdk#z import with zod package import
 /* eslint-disable @typescript-eslint/no-deprecated */
@@ -50,81 +50,72 @@ export const extension = new NetlifyExtension({
 
 export const CSP_EXTENSION_ENABLED = "CSP_EXTENSION_ENABLED";
 
-extension.addBuildEventHandler(
-  "onPreBuild",
-  ({ buildContext, netlifyConfig, utils, constants, buildConfig, ...opts }) => {
-    const { cspConfig, buildHook } = buildContext ?? {};
+extension.addBuildEventHandler("onPreBuild", (options) => {
+  const { buildContext, buildConfig } = options;
 
-    if (!process.env.INCOMING_HOOK_BODY && !cspConfig && !buildHook?.url) {
-      console.log("CSP Extension not enabled for this site.");
-      return;
-    }
-    let config = cspConfig ?? buildConfig ?? {};
+  const { cspConfig, buildHook } = buildContext ?? {};
 
-    // We lean on this favoured order of precedence:
-    // 1. Incoming hook body
-    // 2. Build context
-    // 3. Plugin options - realistically won't ever be called in this context
-    let tempConfig = false;
+  if (!process.env.INCOMING_HOOK_BODY && !cspConfig && !buildHook?.url) {
+    console.log("CSP Extension not enabled for this site.");
+    return;
+  }
+  let config = cspConfig ?? buildConfig ?? {};
 
-    if (process.env.INCOMING_HOOK_BODY) {
-      try {
-        const hookBody: unknown = JSON.parse(process.env.INCOMING_HOOK_BODY);
-        const result = previewBuildConfigSchema.safeParse(hookBody);
+  // We lean on this favoured order of precedence:
+  // 1. Incoming hook body
+  // 2. Build context
+  // 3. Plugin options - realistically won't ever be called in this context
+  let tempConfig = false;
 
-        if (result.success && result.data.isTestBuild) {
-          console.log("Using temporary config from test build.");
-          config = result.data;
-          tempConfig = true;
-        } else {
-          console.log(
-            "Incoming hook is present, but not a configuration object for CSP.",
-          );
-        }
-      } catch (e) {
-        console.warn("Failed to parse incoming hook body.");
-        console.log(e);
+  if (process.env.INCOMING_HOOK_BODY) {
+    try {
+      const hookBody: unknown = JSON.parse(process.env.INCOMING_HOOK_BODY);
+      const result = previewBuildConfigSchema.safeParse(hookBody);
+
+      if (result.success && result.data.isTestBuild) {
+        console.log("Using temporary config from test build.");
+        config = result.data;
+        tempConfig = true;
+      } else {
+        console.log(
+          "Incoming hook is present, but not a configuration object for CSP.",
+        );
       }
+    } catch (e) {
+      console.warn("Failed to parse incoming hook body.");
+      console.log(e);
     }
+  }
 
-    if (!tempConfig) {
-      config = {
-        reportOnly: true,
-        reportUri: "",
-        unsafeEval: true,
-        path: ["/*"],
-        excludedPath: [],
-      };
-      console.log("Using default CSP config.");
-    }
-
-    // Ensure if path is not present, that it is set to "/*" as a default
-    if (!config.path) {
-      config.path = ["/*"];
-    }
-
-    console.log("Config:");
-    console.log("---");
-    console.log(`Report Only: ${config.reportOnly?.toString() ?? "<not set>"}`);
-    console.log(`Report URI: ${config.reportUri?.toString() ?? "<not set>"}`);
-    console.log(`Unsafe Eval: ${config.unsafeEval?.toString() ?? "<not set>"}`);
-    console.log(`Path: ${config.path.join(", ")}`);
-    console.log(
-      `Excluded Path: ${config.excludedPath?.join(", ") ?? "<not set>"}`,
-    );
-    console.log("---");
-
-    const newOpts = {
-      ...opts,
-      constants,
-      netlifyConfig,
-      utils,
-      config,
+  if (!tempConfig) {
+    config = {
+      reportOnly: true,
+      reportUri: "",
+      unsafeEval: true,
+      path: ["/*"],
+      excludedPath: [],
     };
+    console.log("Using default CSP config.");
+  }
 
-    return onPreBuild(newOpts);
-  },
-);
+  // Ensure if path is not present, that it is set to "/*" as a default
+  if (!config.path) {
+    config.path = ["/*"];
+  }
+
+  console.log("Config:");
+  console.log("---");
+  console.log(`Report Only: ${config.reportOnly?.toString() ?? "<not set>"}`);
+  console.log(`Report URI: ${config.reportUri?.toString() ?? "<not set>"}`);
+  console.log(`Unsafe Eval: ${config.unsafeEval?.toString() ?? "<not set>"}`);
+  console.log(`Path: ${config.path.join(", ")}`);
+  console.log(
+    `Excluded Path: ${config.excludedPath?.join(", ") ?? "<not set>"}`,
+  );
+  console.log("---");
+
+  return createOnPreBuild(config)({ ...options, inputs: {} });
+});
 
 extension.addBuildEventContext(({ site_config }) => {
   // FIXME(ndhoule): I don't know if this lint check is correct or if the type here is incorrect, so
