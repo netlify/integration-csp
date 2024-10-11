@@ -2,6 +2,8 @@
 import { NetlifyExtension, z } from "@netlify/sdk";
 import { onPreBuild } from "./build-event-handlers/index.js";
 
+// FIXME(ndhoule): Replace deprecated sdk#z import with zod package import
+/* eslint-disable @typescript-eslint/no-deprecated */
 export const cspConfigSchema = z
   .object({
     reportOnly: z.boolean().optional(),
@@ -38,6 +40,7 @@ export const buildConfigSchema = z.object({
   path: z.string().array().optional(),
   excludedPath: z.string().array().optional(),
 });
+/* eslint-enable @typescript-eslint/no-deprecated */
 
 export const extension = new NetlifyExtension({
   siteConfigSchema,
