@@ -46,7 +46,9 @@ export const appRouter = router({
 
         try {
           siteConfig = await client.getSiteConfiguration(teamId, siteId);
-        } catch (error) {}
+        } catch {
+          // FIXME(ndhoule): Doesn't getSiteConfiguration return null for nonexistent configs?
+        }
 
         let configData;
 
@@ -56,7 +58,7 @@ export const appRouter = router({
           if (!configData.success) {
             console.warn(
               "Failed to parse site settings",
-              JSON.stringify(configData.error, null, 2)
+              JSON.stringify(configData.error, null, 2),
             );
           }
         }
@@ -74,7 +76,7 @@ export const appRouter = router({
             },
           },
         };
-      }
+      },
     ),
 
     mutateTriggerConfigTest: procedure
@@ -98,8 +100,10 @@ export const appRouter = router({
         if (!configData.success) {
           console.warn(
             "Failed to parse site settings",
-            JSON.stringify(configData.error, null, 2)
+            JSON.stringify(configData.error, null, 2),
           );
+          // FIXME(ndhoule): We should bail in this scenario, right? The rest of the code does
+          // nothing if this step fails.
         }
 
         if (!configData.data?.buildHook?.url) {
@@ -109,12 +113,14 @@ export const appRouter = router({
           });
         }
 
-        const res = await fetch(configData.data?.buildHook?.url, {
+        const res = await fetch(configData.data.buildHook.url, {
           method: "POST",
           body: JSON.stringify(input),
         });
 
-        console.log(`Triggered build for ${siteId} with status ${res.status}.`);
+        console.log(
+          `Triggered build for ${siteId} with status ${res.status.toString()}.`,
+        );
 
         return;
       }),
@@ -133,11 +139,11 @@ export const appRouter = router({
           await client.upsertSiteConfiguration(teamId, siteId, {
             ...input,
           });
-        } catch (e) {
+        } catch (err) {
           throw new TRPCError({
+            cause: err,
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to save site configuration",
-            cause: e,
           });
         }
 
@@ -166,7 +172,7 @@ export const appRouter = router({
           const siteConfig = await client.getSiteConfiguration(teamId, siteId);
 
           if (siteConfig) {
-            return client.updateSiteConfiguration(teamId, siteId, {
+            return await client.updateSiteConfiguration(teamId, siteId, {
               buildHook: {
                 url,
                 id,
@@ -179,15 +185,15 @@ export const appRouter = router({
               id,
             },
           });
-        } catch (e) {
+        } catch (err) {
           throw new TRPCError({
+            cause: err,
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to save site configuration",
-            cause: e,
           });
         }
         return;
-      }
+      },
     ),
     mutateDisablement: procedure.mutation(
       async ({ ctx: { teamId, siteId, client } }) => {
@@ -208,7 +214,7 @@ export const appRouter = router({
         if (!configData.success) {
           console.warn(
             "Failed to parse site settings",
-            JSON.stringify(configData.error, null, 2)
+            JSON.stringify(configData.error, null, 2),
           );
         }
 
@@ -227,13 +233,14 @@ export const appRouter = router({
           await client.removeBuildToken(teamId, siteId);
           await client.deleteBuildHook(siteId, buildHookId);
           await client.deleteSiteConfiguration(teamId, siteId);
-        } catch (e) {
+        } catch (err) {
           throw new TRPCError({
+            cause: err,
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to disable extension for site",
           });
         }
-      }
+      },
     ),
   },
 });

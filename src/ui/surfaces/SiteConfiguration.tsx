@@ -41,7 +41,7 @@ export const SiteConfiguration = () => {
       onSuccess: async () => {
         await trpcUtils.siteConfig.queryConfig.invalidate();
       },
-    }
+    },
   );
   const triggerConfigTestMutation =
     trpc.siteConfig.mutateTriggerConfigTest.useMutation({
@@ -80,7 +80,7 @@ export const SiteConfiguration = () => {
 
   type CspConfigFormData = z.infer<typeof cspConfigFormSchema>;
 
-  const onSubmit = ({
+  const onSubmit = async ({
     path: newPath,
     excludedPath: newExcludedPath,
     ...data
@@ -95,38 +95,36 @@ export const SiteConfiguration = () => {
         ? []
         : newExcludedPath.split("\n");
 
-    void (() => {
-      if (triggerTestRun) {
-        setTriggerTestRun(false);
-        triggerConfigTestMutation.mutateAsync({
+    if (triggerTestRun) {
+      setTriggerTestRun(false);
+      await triggerConfigTestMutation.mutateAsync({
+        reportOnly: data.reportOnly ?? false,
+        reportUri: data.reportUri ?? "",
+        unsafeEval: data.unsafeEval ?? false,
+        path,
+        excludedPath,
+        isTestBuild: true,
+      });
+    } else {
+      await siteConfigurationMutation.mutateAsync({
+        ...siteConfigQuery.data?.config,
+        cspConfig: {
+          ...siteConfigQuery.data?.config.cspConfig,
           reportOnly: data.reportOnly ?? false,
-          reportUri: data.reportUri ?? "",
+          reportUri: data.reportUri,
           unsafeEval: data.unsafeEval ?? false,
           path,
           excludedPath,
-          isTestBuild: true,
-        });
-      } else {
-        siteConfigurationMutation.mutateAsync({
-          ...siteConfigQuery?.data?.config,
-          cspConfig: {
-            ...siteConfigQuery?.data?.config?.cspConfig,
-            reportOnly: data.reportOnly ?? false,
-            reportUri: data.reportUri,
-            unsafeEval: data.unsafeEval ?? false,
-            path,
-            excludedPath,
-          },
-        });
-        sdk.requestTermination();
-      }
-    })();
+        },
+      });
+      sdk.requestTermination();
+    }
   };
 
   return (
     <SiteBuildDeployConfigurationSurface>
       <Card>
-        {siteConfigQuery.data?.config?.buildHook ? (
+        {siteConfigQuery.data?.config.buildHook ? (
           <>
             <CardTitle>Disable for site</CardTitle>
             <div>
@@ -163,13 +161,13 @@ export const SiteConfiguration = () => {
           </>
         )}
       </Card>
-      {siteConfigQuery.data?.config?.buildHook && (
+      {siteConfigQuery.data?.config.buildHook && (
         <Card>
           <CardTitle>Configuration</CardTitle>
           <Form
             schema={cspConfigFormSchema}
             onSubmit={onSubmit}
-            defaultValues={siteConfigQuery.data.config?.cspConfig || {}}
+            defaultValues={siteConfigQuery.data.config.cspConfig}
             loading={siteConfigurationMutation.isPending}
           >
             <div className="tw-mt-4">

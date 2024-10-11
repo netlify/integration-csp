@@ -66,7 +66,7 @@ extension.addBuildEventHandler(
 
     if (process.env.INCOMING_HOOK_BODY) {
       try {
-        const hookBody = JSON.parse(process.env.INCOMING_HOOK_BODY);
+        const hookBody: unknown = JSON.parse(process.env.INCOMING_HOOK_BODY);
         const result = previewBuildConfigSchema.safeParse(hookBody);
 
         if (result.success && result.data.isTestBuild) {
@@ -75,7 +75,7 @@ extension.addBuildEventHandler(
           tempConfig = true;
         } else {
           console.log(
-            "Incoming hook is present, but not a configuration object for CSP."
+            "Incoming hook is present, but not a configuration object for CSP.",
           );
         }
       } catch (e) {
@@ -85,32 +85,30 @@ extension.addBuildEventHandler(
     }
 
     if (!tempConfig) {
-      if (!config) {
-        config = {
-          reportOnly: true,
-          reportUri: "",
-          unsafeEval: true,
-          path: ["/*"],
-          excludedPath: [],
-        };
-        console.log("Using default CSP config.");
-      } else {
-        console.log("Using stored CSP config.");
-      }
+      config = {
+        reportOnly: true,
+        reportUri: "",
+        unsafeEval: true,
+        path: ["/*"],
+        excludedPath: [],
+      };
+      console.log("Using default CSP config.");
     }
 
     // Ensure if path is not present, that it is set to "/*" as a default
-    if (!config?.path) {
+    if (!config.path) {
       config.path = ["/*"];
     }
 
     console.log("Config:");
     console.log("---");
-    console.log(`Report Only: ${config.reportOnly}`);
-    console.log(`Report URI: ${config.reportUri}`);
-    console.log(`Unsafe Eval: ${config.unsafeEval}`);
-    console.log(`Path: ${config.path?.join(", ")}`);
-    console.log(`Excluded Path: ${config.excludedPath?.join(", ")}`);
+    console.log(`Report Only: ${config.reportOnly?.toString() ?? "<not set>"}`);
+    console.log(`Report URI: ${config.reportUri?.toString() ?? "<not set>"}`);
+    console.log(`Unsafe Eval: ${config.unsafeEval?.toString() ?? "<not set>"}`);
+    console.log(`Path: ${config.path.join(", ")}`);
+    console.log(
+      `Excluded Path: ${config.excludedPath?.join(", ") ?? "<not set>"}`,
+    );
     console.log("---");
 
     const newOpts = {
@@ -122,9 +120,12 @@ extension.addBuildEventHandler(
     };
 
     return onPreBuild(newOpts);
-  }
+  },
 );
 
-extension.addBuildEventContext(async ({ site_config }) => {
-  return site_config.config ?? undefined;
+extension.addBuildEventContext(({ site_config }) => {
+  // FIXME(ndhoule): I don't know if this lint check is correct or if the type here is incorrect, so
+  // leaving this to be safe.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return Promise.resolve(site_config.config ?? undefined);
 });
