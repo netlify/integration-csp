@@ -10,6 +10,7 @@
     "dev": "netlify-extension dev",
     "lint": "eslint --cache",
     "lint:fix": "eslint --cache --fix",
+    "test": "echo 'No tests, exiting.'",
     "typecheck": "tsc --build",
     "typecheck:watch": "tsc --build --watch"
   },
