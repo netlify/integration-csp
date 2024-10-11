@@ -14,5 +14,5 @@ const root = createRoot(rootNode);
 root.render(
   <NetlifyExtensionUI>
     <App />
-  </NetlifyExtensionUI>
+  </NetlifyExtensionUI>,
 );
