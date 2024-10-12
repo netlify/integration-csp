@@ -1,0 +1,12 @@
+[build]
+command = "echo onBuild"
+
+# Set the extension "name" to your extension's slug.
+[[integrations]]
+name = "yl9z8yms-migrate-csp-extension"
+
+[integrations.dev]
+# Set the "path" as the path from your test site to your extension's build folder.
+path = "/home/ndhoule/dev/src/github.com/netlify/integration-csp"
+# The following forces the extension to be used when building the test site.
+force_run_in_build = true
