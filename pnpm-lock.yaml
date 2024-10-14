@@ -12,8 +12,8 @@ importers:
         specifier: ^29.54.2
         version: 29.54.2(@opentelemetry/api@1.8.0)(@types/node@22.5.4)
       '@netlify/functions':
-        specifier: ^2.8.1
-        version: 2.8.1
+        specifier: ^2.8.2
+        version: 2.8.2
       '@netlify/plugin-csp-nonce':
         specifier: ^1.2.9
         version: 1.2.10
@@ -1364,10 +1364,6 @@ packages:
     resolution: {integrity: sha512-6G92AlcpFrQG72XU8YH8pg94eDnq7+Q0YJhb8x4qNpdGsvuzvrfHWBmqFGp/Yshmv4wex9lpsTRZOocdrA2erQ==}
     engines: {node: '>=14.0.0'}
 
-  '@netlify/functions@2.8.1':
-    resolution: {integrity: sha512-+6wtYdoz0yE06dSa9XkP47tw5zm6g13QMeCwM3MmHx1vn8hzwFa51JtmfraprdkL7amvb7gaNM+OOhQU1h6T8A==}
-    engines: {node: '>=14.0.0'}
-
   '@netlify/functions@2.8.2':
     resolution: {integrity: sha512-DeoAQh8LuNPvBE4qsKlezjKj0PyXDryOFJfJKo3Z1qZLKzQ21sT314KQKPVjfvw6knqijj+IO+0kHXy/TJiqNA==}
     engines: {node: '>=14.0.0'}
@@ -1517,14 +1513,6 @@ packages:
     resolution: {integrity: sha512-8AB7tH4uHsXynt4uDaRI4yEpy4/XNHSmnLtQJNEog7BKBMJ2XS/1YZ6Yiv8eWqTnXULcJXqe8QXR3InLHCQMWQ==}
     engines: {node: '>= 18.19.0'}
     hasBin: true
-
-  '@netlify/serverless-functions-api@1.19.1':
-    resolution: {integrity: sha512-2KYkyluThg1AKfd0JWI7FzpS4A/fzVVGYIf6AM4ydWyNj8eI/86GQVLeRgDoH7CNOxt243R5tutWlmHpVq0/Ew==}
-    engines: {node: '>=18.0.0'}
-
-  '@netlify/serverless-functions-api@1.23.0':
-    resolution: {integrity: sha512-0SwlMeqcwPzvRgE6aJczAiEz27hXl4thd46PECN3bX3FvAEuqpSTjQefuF3PEycdnWhCvTAKe1OW+Uv7ZT3pug==}
-    engines: {node: '>=18.0.0'}
 
   '@netlify/serverless-functions-api@1.26.1':
     resolution: {integrity: sha512-q3L9i3HoNfz0SGpTIS4zTcKBbRkxzCRpd169eyiTuk3IwcPC3/85mzLHranlKo2b+HYT0gu37YxGB45aD8A3Tw==}
@@ -9060,10 +9048,6 @@ snapshots:
     dependencies:
       is-promise: 4.0.0
 
-  '@netlify/functions@2.8.1':
-    dependencies:
-      '@netlify/serverless-functions-api': 1.19.1
-
   '@netlify/functions@2.8.2':
     dependencies:
       '@netlify/serverless-functions-api': 1.26.1
@@ -9314,16 +9298,6 @@ snapshots:
       - ts-node
       - utf-8-validate
 
-  '@netlify/serverless-functions-api@1.19.1':
-    dependencies:
-      '@netlify/node-cookies': 0.1.0
-      urlpattern-polyfill: 8.0.2
-
-  '@netlify/serverless-functions-api@1.23.0':
-    dependencies:
-      '@netlify/node-cookies': 0.1.0
-      urlpattern-polyfill: 8.0.2
-
   '@netlify/serverless-functions-api@1.26.1':
     dependencies:
       '@netlify/node-cookies': 0.1.0
@@ -9363,7 +9337,7 @@ snapshots:
       '@babel/parser': 7.25.6
       '@babel/types': 7.25.6
       '@netlify/binary-info': 1.0.0
-      '@netlify/serverless-functions-api': 1.23.0
+      '@netlify/serverless-functions-api': 1.29.1
       '@vercel/nft': 0.27.4(supports-color@9.4.0)
       archiver: 7.0.1
       common-path-prefix: 3.0.0
@@ -9914,7 +9888,7 @@ snapshots:
 
   '@stackbit/artisanal-names@1.0.1': {}
 
-  '@stackbit/cms-contentful@0.4.56':
+  '@stackbit/cms-contentful@0.4.56(graphql@16.9.0)':
     dependencies:
       '@contentful/rich-text-types': 15.15.1
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
@@ -9926,6 +9900,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
       - encoding
+      - graphql
       - supports-color
 
   '@stackbit/cms-core@2.0.1(graphql@16.9.0)':
@@ -9960,7 +9935,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@stackbit/cms-git@0.4.18':
+  '@stackbit/cms-git@0.4.18(graphql@16.9.0)':
     dependencies:
       '@stackbit/artisanal-names': 1.0.1
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
@@ -9974,11 +9949,15 @@ snapshots:
       micromatch: 4.0.8
       slugify: 1.6.6
     transitivePeerDependencies:
+      - bufferutil
+      - canvas
       - debug
       - encoding
+      - graphql
       - supports-color
+      - utf-8-validate
 
-  '@stackbit/cms-sanity@0.2.56':
+  '@stackbit/cms-sanity@0.2.56(graphql@16.9.0)':
     dependencies:
       '@sanity/block-tools': 2.36.2
       '@sanity/client': 3.4.1
@@ -9998,17 +9977,18 @@ snapshots:
       - canvas
       - debug
       - encoding
+      - graphql
       - supports-color
       - utf-8-validate
 
-  '@stackbit/dev-common@0.5.51':
+  '@stackbit/dev-common@0.5.51(graphql@16.9.0)':
     dependencies:
       '@iarna/toml': 2.2.5
       '@stackbit/artisanal-names': 1.0.1
-      '@stackbit/cms-contentful': 0.4.56
+      '@stackbit/cms-contentful': 0.4.56(graphql@16.9.0)
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
-      '@stackbit/cms-git': 0.4.18
-      '@stackbit/cms-sanity': 0.2.56
+      '@stackbit/cms-git': 0.4.18(graphql@16.9.0)
+      '@stackbit/cms-sanity': 0.2.56(graphql@16.9.0)
       '@stackbit/sdk': 2.0.1
       '@stackbit/types': 1.0.1
       '@stackbit/utils': 0.4.19
@@ -10034,14 +10014,15 @@ snapshots:
       - canvas
       - debug
       - encoding
+      - graphql
       - supports-color
       - utf-8-validate
 
   '@stackbit/dev@1.0.35(graphql@16.9.0)':
     dependencies:
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
-      '@stackbit/cms-git': 0.4.18
-      '@stackbit/dev-common': 0.5.51
+      '@stackbit/cms-git': 0.4.18(graphql@16.9.0)
+      '@stackbit/dev-common': 0.5.51(graphql@16.9.0)
       '@stackbit/sdk': 2.0.1
       axios: 0.25.0
       chalk: 4.1.2
