@@ -88,14 +88,21 @@ extension.addBuildEventHandler(
     }
 
     if (!tempConfig) {
-      config = {
-        reportOnly: true,
-        reportUri: "",
-        unsafeEval: true,
-        path: ["/*"],
-        excludedPath: [],
-      };
-      console.log("Using default CSP config.");
+      // FIXME(ndhoule): This is a bug. At one point we added a default value for config, which
+      // means we can no longer enter this case.
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (!config) {
+        config = {
+          reportOnly: true,
+          reportUri: "",
+          unsafeEval: true,
+          path: ["/*"],
+          excludedPath: [],
+        };
+        console.log("Using default CSP config.");
+      } else {
+        console.log("Using stored CSP config.");
+      }
     }
 
     // Ensure if path is not present, that it is set to "/*" as a default
