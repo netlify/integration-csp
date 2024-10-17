@@ -18,8 +18,8 @@ importers:
         specifier: ^1.2.9
         version: 1.2.10
       '@netlify/sdk':
-        specifier: ^2.4.4
-        version: 2.6.1(@google-cloud/storage@5.20.5)(@trpc/server@11.0.0-rc.477)(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(graphql@16.9.0)(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))
+        specifier: ^2.7.3
+        version: 2.7.3(@google-cloud/storage@5.20.5)(@trpc/server@11.0.0-rc.477)(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(graphql@16.9.0)(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))
       '@tanstack/react-query':
         specifier: ^5.55.4
         version: 5.55.4(react@18.3.1)
@@ -1335,8 +1335,8 @@ packages:
     resolution: {integrity: sha512-FQegi441w8KLJO+QhU3QJWa8vlYI7HfioPwBkTKOnLpImun+L/2wcVCHaPWLgyV5o6LGwGPedXxXNgWebRiI+w==}
     engines: {node: '>=16.0.0'}
 
-  '@netlify/content-engine@1.2.3':
-    resolution: {integrity: sha512-i1ZrAx8p2XgTgdeNCmijVx810FaKqdTzRSfeWF2M/X3u55H9pjhhUy4PI6CiIoV1q5VbKzomDcYNJsmmafuUPw==}
+  '@netlify/content-engine@1.4.0':
+    resolution: {integrity: sha512-M1tT9eVGGYJvFH1X2pA+iKFiYaUQBadpTcKMoqgD7kwojdboAtMYk6hgwmIZVBSSNIKpuECLSC2pzHAzTWfkrQ==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       '@google-cloud/storage': ^5.8.4
@@ -1500,8 +1500,8 @@ packages:
     peerDependencies:
       '@trpc/server': '>= 11 || >= 11.0.0-rc.0'
 
-  '@netlify/sdk--ui-react@1.7.1':
-    resolution: {integrity: sha512-/Q/vL3bkoSWwkAdWso5QQrRA+OiG34b9ekeJe5GV7OsJpOpjSLj2dUtg6zNpp8ilJ5NdWAlyPyZHtDnqfGYxdQ==}
+  '@netlify/sdk--ui-react@1.8.0':
+    resolution: {integrity: sha512-mY9OnjB7Bh5jOBoUZql4W4c+9rspKnRKc+zx9hvUTq79jC+kjO1cirQLutOjFZccvyrIefyMQuOJBdaSSdshzQ==}
     peerDependencies:
       autoprefixer: ^10.4.19
       postcss: ^8.4.38
@@ -1513,8 +1513,8 @@ packages:
     resolution: {integrity: sha512-ogDibdluTkqLtKBVWye6tzh3D9GJ3jfHe7IhnbMYc1HlNiLz7QqOrLpVyqm8pOvXW5PZfJ11JPyTcs69/yTztQ==}
     hasBin: true
 
-  '@netlify/sdk@2.6.1':
-    resolution: {integrity: sha512-8AB7tH4uHsXynt4uDaRI4yEpy4/XNHSmnLtQJNEog7BKBMJ2XS/1YZ6Yiv8eWqTnXULcJXqe8QXR3InLHCQMWQ==}
+  '@netlify/sdk@2.7.3':
+    resolution: {integrity: sha512-l9WqoNVDMjsoa81MveEcrixO+6rlPbbab630RNc7kd1Uf7itwm1UE/UAPGHGoYD+OB22BaKFlGpqZ+05gOAQ4w==}
     engines: {node: '>= 18.19.0'}
     hasBin: true
 
@@ -3858,10 +3858,6 @@ packages:
     resolution: {integrity: sha512-1KboYwxxCG5kwkJHR5LjFDTD1Mgl8n4PIMcCuhhd/1OqaxlC68P3QKbvvAbZVUtVgtlxEdTgSUwf6yxwzRCuuA==}
     engines: {node: '>= 0.10.26'}
 
-  express@4.20.0:
-    resolution: {integrity: sha512-pLdae7I6QqShF5PnNTCVn4hI91Dx0Grkn2+IAsMTgMIKuQVte2dN9PeGSSAME2FR8anOhVA62QDIUaWVfEXVLw==}
-    engines: {node: '>= 0.10.0'}
-
   express@4.21.0:
     resolution: {integrity: sha512-VqcNGcj/Id5ZT1LZ/cfihi3ttTn+NJmkli2eZADigjq29qTlWi/hAQ43t/VLPq8+UX06FCEx3ByOYet6ZFblng==}
     engines: {node: '>= 0.10.0'}
@@ -4031,10 +4027,6 @@ packages:
   filter-obj@5.1.0:
     resolution: {integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==}
     engines: {node: '>=14.16'}
-
-  finalhandler@1.2.0:
-    resolution: {integrity: sha512-5uXcUVftlQMFnWC9qu/svkWv3GTd2PfUhK/3PLkYNAe7FbqJMt3515HaxE6eRL74GdsriiwujiawdaB1BpEISg==}
-    engines: {node: '>= 0.8'}
 
   finalhandler@1.3.1:
     resolution: {integrity: sha512-6BN9trH7bp3qvnrRyzsBz+g3lZxTNZTbVO2EV1CS0WIcDbawYVdYvGflME/9QP0h0pYlCDBCTjYa9nZzMDpyxQ==}
@@ -6265,10 +6257,6 @@ packages:
     resolution: {integrity: sha512-FLpr4flz5xZTSJxSeaheeMKN/EDzMdK7b8PTOC6a5PYFKTucWbdqjgqaEyH0shFiSJrVB1+Qqi4Tk19ccU6Aug==}
     engines: {node: '>=12.20'}
 
-  qs@6.11.0:
-    resolution: {integrity: sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==}
-    engines: {node: '>=0.6'}
-
   qs@6.13.0:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
     engines: {node: '>=0.6'}
@@ -6605,16 +6593,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  send@0.18.0:
-    resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
-    engines: {node: '>= 0.8.0'}
-
   send@0.19.0:
     resolution: {integrity: sha512-dW41u5VfLXu8SJh5bwRmyYUbAoSB3c9uQh6L8h/KtsFREPWpbX1lrljJo186Jc4nmci/sGUZ9a0a0J2zgfq2hw==}
-    engines: {node: '>= 0.8.0'}
-
-  serve-static@1.16.0:
-    resolution: {integrity: sha512-pDLK8zwl2eKaYrs8mrPZBJua4hMplRWJ1tIFksVC3FtBEBnl8dxgeHtsaMS8DhS9i4fLObaon6ABoc4/hQGdPA==}
     engines: {node: '>= 0.8.0'}
 
   serve-static@1.16.2:
@@ -8822,7 +8802,7 @@ snapshots:
       devcert: 1.2.2
       enhanced-resolve: 5.17.1
       execa: 5.1.1
-      express: 4.20.0
+      express: 4.21.0
       fastest-levenshtein: 1.0.16
       fastq: 1.17.1
       file-type: 16.5.4
@@ -8896,7 +8876,7 @@ snapshots:
       - debug
       - supports-color
 
-  '@netlify/content-engine@1.2.3(@google-cloud/storage@5.20.5)':
+  '@netlify/content-engine@1.4.0(@google-cloud/storage@5.20.5)':
     dependencies:
       '@babel/code-frame': 7.24.7
       '@babel/types': 7.25.6
@@ -8906,7 +8886,7 @@ snapshots:
       '@pnpm/exec': 2.0.0
       address: 1.2.2
       async-mutex: 0.5.0
-      axios: 0.21.4
+      axios: 1.7.7
       better-opn: 2.1.1
       cache-manager: 2.11.1
       chalk: 4.1.2
@@ -8919,7 +8899,7 @@ snapshots:
       devcert: 1.2.2
       enhanced-resolve: 5.17.1
       execa: 5.1.1
-      express: 4.20.0
+      express: 4.21.0
       fastest-levenshtein: 1.0.16
       fastq: 1.17.1
       file-type: 16.5.4
@@ -9181,7 +9161,7 @@ snapshots:
       '@trpc/server': 11.0.0-rc.477
       zod: 3.23.8
 
-  '@netlify/sdk--ui-react@1.7.1(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))':
+  '@netlify/sdk--ui-react@1.8.0(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))':
     dependencies:
       '@hookform/resolvers': 3.9.0(react-hook-form@7.53.0(react@18.3.1))
       '@netlify/netlify-design-tokens': 6.0.0
@@ -9252,19 +9232,19 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@netlify/sdk@2.6.1(@google-cloud/storage@5.20.5)(@trpc/server@11.0.0-rc.477)(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(graphql@16.9.0)(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))':
+  '@netlify/sdk@2.7.3(@google-cloud/storage@5.20.5)(@trpc/server@11.0.0-rc.477)(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(graphql@16.9.0)(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))':
     dependencies:
       '@commander-js/extra-typings': 12.1.0(commander@12.1.0)
       '@graphql-tools/stitch': 9.2.10(graphql@16.9.0)
       '@graphql-tools/utils': 10.5.4(graphql@16.9.0)
       '@graphql-tools/wrap': 10.0.5(graphql@16.9.0)
-      '@netlify/content-engine': 1.2.3(@google-cloud/storage@5.20.5)
+      '@netlify/content-engine': 1.4.0(@google-cloud/storage@5.20.5)
       '@netlify/functions': 2.8.2
       '@netlify/integrations': 0.6.0
       '@netlify/sdk--extension-api-client': 2.3.0
       '@netlify/sdk--ui-core': 1.4.0
       '@netlify/sdk--ui-functions': 1.2.0(@trpc/server@11.0.0-rc.477)
-      '@netlify/sdk--ui-react': 1.7.1(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))
+      '@netlify/sdk--ui-react': 1.8.0(@types/react@18.3.5)(autoprefixer@10.4.20(postcss@8.4.45))(postcss@8.4.45)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(tailwindcss@3.4.10(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4)))(ts-node@10.9.2(@types/node@22.5.4)(typescript@5.5.4))
       '@sindresorhus/slugify': 2.2.1
       '@stackbit/dev': 1.0.35(graphql@16.9.0)
       '@types/configstore': 6.0.2
@@ -9914,7 +9894,7 @@ snapshots:
 
   '@stackbit/artisanal-names@1.0.1': {}
 
-  '@stackbit/cms-contentful@0.4.56':
+  '@stackbit/cms-contentful@0.4.56(graphql@16.9.0)':
     dependencies:
       '@contentful/rich-text-types': 15.15.1
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
@@ -9926,6 +9906,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
       - encoding
+      - graphql
       - supports-color
 
   '@stackbit/cms-core@2.0.1(graphql@16.9.0)':
@@ -9960,7 +9941,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@stackbit/cms-git@0.4.18':
+  '@stackbit/cms-git@0.4.18(graphql@16.9.0)':
     dependencies:
       '@stackbit/artisanal-names': 1.0.1
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
@@ -9974,11 +9955,15 @@ snapshots:
       micromatch: 4.0.8
       slugify: 1.6.6
     transitivePeerDependencies:
+      - bufferutil
+      - canvas
       - debug
       - encoding
+      - graphql
       - supports-color
+      - utf-8-validate
 
-  '@stackbit/cms-sanity@0.2.56':
+  '@stackbit/cms-sanity@0.2.56(graphql@16.9.0)':
     dependencies:
       '@sanity/block-tools': 2.36.2
       '@sanity/client': 3.4.1
@@ -9998,17 +9983,18 @@ snapshots:
       - canvas
       - debug
       - encoding
+      - graphql
       - supports-color
       - utf-8-validate
 
-  '@stackbit/dev-common@0.5.51':
+  '@stackbit/dev-common@0.5.51(graphql@16.9.0)':
     dependencies:
       '@iarna/toml': 2.2.5
       '@stackbit/artisanal-names': 1.0.1
-      '@stackbit/cms-contentful': 0.4.56
+      '@stackbit/cms-contentful': 0.4.56(graphql@16.9.0)
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
-      '@stackbit/cms-git': 0.4.18
-      '@stackbit/cms-sanity': 0.2.56
+      '@stackbit/cms-git': 0.4.18(graphql@16.9.0)
+      '@stackbit/cms-sanity': 0.2.56(graphql@16.9.0)
       '@stackbit/sdk': 2.0.1
       '@stackbit/types': 1.0.1
       '@stackbit/utils': 0.4.19
@@ -10016,7 +10002,7 @@ snapshots:
       chalk: 4.1.2
       configstore: 5.0.1
       detect-port: 1.6.1
-      express: 4.20.0
+      express: 4.21.0
       file-type: 16.5.4
       fs-extra: 10.1.0
       git-url-parse: 13.1.1
@@ -10034,14 +10020,15 @@ snapshots:
       - canvas
       - debug
       - encoding
+      - graphql
       - supports-color
       - utf-8-validate
 
   '@stackbit/dev@1.0.35(graphql@16.9.0)':
     dependencies:
       '@stackbit/cms-core': 2.0.1(graphql@16.9.0)
-      '@stackbit/cms-git': 0.4.18
-      '@stackbit/dev-common': 0.5.51
+      '@stackbit/cms-git': 0.4.18(graphql@16.9.0)
+      '@stackbit/dev-common': 0.5.51(graphql@16.9.0)
       '@stackbit/sdk': 2.0.1
       axios: 0.25.0
       chalk: 4.1.2
@@ -10050,7 +10037,7 @@ snapshots:
       cors: 2.8.5
       detect-port: 1.6.1
       dotenv: 16.4.5
-      express: 4.20.0
+      express: 4.21.0
       fs-extra: 10.1.0
       http-proxy-middleware: 0.20.0
       lodash: 4.17.21
@@ -10219,7 +10206,7 @@ snapshots:
 
   '@types/estree-jsx@1.0.5':
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
 
   '@types/estree@1.0.5': {}
 
@@ -11317,7 +11304,7 @@ snapshots:
       devcert: 1.2.2
       enhanced-resolve: 5.17.1
       execa: 5.1.1
-      express: 4.20.0
+      express: 4.21.0
       fastest-levenshtein: 1.0.16
       fastq: 1.17.1
       file-type: 16.5.4
@@ -12297,42 +12284,6 @@ snapshots:
     dependencies:
       on-headers: 1.0.2
 
-  express@4.20.0:
-    dependencies:
-      accepts: 1.3.8
-      array-flatten: 1.1.1
-      body-parser: 1.20.3
-      content-disposition: 0.5.4
-      content-type: 1.0.5
-      cookie: 0.6.0
-      cookie-signature: 1.0.6
-      debug: 2.6.9
-      depd: 2.0.0
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      etag: 1.8.1
-      finalhandler: 1.2.0
-      fresh: 0.5.2
-      http-errors: 2.0.0
-      merge-descriptors: 1.0.3
-      methods: 1.1.2
-      on-finished: 2.4.1
-      parseurl: 1.3.3
-      path-to-regexp: 0.1.10
-      proxy-addr: 2.0.7
-      qs: 6.11.0
-      range-parser: 1.2.1
-      safe-buffer: 5.2.1
-      send: 0.19.0
-      serve-static: 1.16.0
-      setprototypeof: 1.2.0
-      statuses: 2.0.1
-      type-is: 1.6.18
-      utils-merge: 1.0.1
-      vary: 1.1.2
-    transitivePeerDependencies:
-      - supports-color
-
   express@4.21.0:
     dependencies:
       accepts: 1.3.8
@@ -12553,18 +12504,6 @@ snapshots:
   filter-obj@3.0.0: {}
 
   filter-obj@5.1.0: {}
-
-  finalhandler@1.2.0:
-    dependencies:
-      debug: 2.6.9
-      encodeurl: 1.0.2
-      escape-html: 1.0.3
-      on-finished: 2.4.1
-      parseurl: 1.3.3
-      statuses: 2.0.1
-      unpipe: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
 
   finalhandler@1.3.1:
     dependencies:
@@ -13079,7 +13018,7 @@ snapshots:
 
   hast-util-to-jsx-runtime@2.3.0:
     dependencies:
-      '@types/estree': 1.0.5
+      '@types/estree': 1.0.6
       '@types/hast': 3.0.4
       '@types/unist': 3.0.3
       comma-separated-tokens: 2.0.3
@@ -15193,10 +15132,6 @@ snapshots:
     dependencies:
       escape-goat: 4.0.0
 
-  qs@6.11.0:
-    dependencies:
-      side-channel: 1.0.6
-
   qs@6.13.0:
     dependencies:
       side-channel: 1.0.6
@@ -15556,24 +15491,6 @@ snapshots:
 
   semver@7.6.3: {}
 
-  send@0.18.0:
-    dependencies:
-      debug: 2.6.9
-      depd: 2.0.0
-      destroy: 1.2.0
-      encodeurl: 1.0.2
-      escape-html: 1.0.3
-      etag: 1.8.1
-      fresh: 0.5.2
-      http-errors: 2.0.0
-      mime: 1.6.0
-      ms: 2.1.3
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      statuses: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
-
   send@0.19.0:
     dependencies:
       debug: 2.6.9
@@ -15589,15 +15506,6 @@ snapshots:
       on-finished: 2.4.1
       range-parser: 1.2.1
       statuses: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
-
-  serve-static@1.16.0:
-    dependencies:
-      encodeurl: 1.0.2
-      escape-html: 1.0.3
-      parseurl: 1.3.3
-      send: 0.18.0
     transitivePeerDependencies:
       - supports-color
 
