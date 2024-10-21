@@ -1,9 +1,7 @@
 // Documentation: https://github.com/netlify/sdk
 import { NetlifyExtension, z } from "@netlify/sdk";
-import { onPreBuild } from "./build-event-handlers/index.js";
+import { onPreBuild } from "./build-event-handlers";
 
-// FIXME(ndhoule): Replace deprecated sdk#z import with zod package import
-/* eslint-disable @typescript-eslint/no-deprecated */
 export const cspConfigSchema = z
   .object({
     reportOnly: z.boolean().optional(),
@@ -40,9 +38,8 @@ export const buildConfigSchema = z.object({
   path: z.string().array().optional(),
   excludedPath: z.string().array().optional(),
 });
-/* eslint-enable @typescript-eslint/no-deprecated */
 
-export const extension = new NetlifyExtension({
+const extension = new NetlifyExtension({
   siteConfigSchema,
   buildConfigSchema,
   buildContextSchema: siteConfigSchema,
@@ -69,7 +66,7 @@ extension.addBuildEventHandler(
 
     if (process.env.INCOMING_HOOK_BODY) {
       try {
-        const hookBody: unknown = JSON.parse(process.env.INCOMING_HOOK_BODY);
+        const hookBody = JSON.parse(process.env.INCOMING_HOOK_BODY);
         const result = previewBuildConfigSchema.safeParse(hookBody);
 
         if (result.success && result.data.isTestBuild) {
@@ -78,7 +75,7 @@ extension.addBuildEventHandler(
           tempConfig = true;
         } else {
           console.log(
-            "Incoming hook is present, but not a configuration object for CSP.",
+            "Incoming hook is present, but not a configuration object for CSP."
           );
         }
       } catch (e) {
@@ -88,30 +85,32 @@ extension.addBuildEventHandler(
     }
 
     if (!tempConfig) {
-      config = {
-        reportOnly: true,
-        reportUri: "",
-        unsafeEval: true,
-        path: ["/*"],
-        excludedPath: [],
-      };
-      console.log("Using default CSP config.");
+      if (!config) {
+        config = {
+          reportOnly: true,
+          reportUri: "",
+          unsafeEval: true,
+          path: ["/*"],
+          excludedPath: [],
+        };
+        console.log("Using default CSP config.");
+      } else {
+        console.log("Using stored CSP config.");
+      }
     }
 
     // Ensure if path is not present, that it is set to "/*" as a default
-    if (!config.path) {
+    if (!config?.path) {
       config.path = ["/*"];
     }
 
     console.log("Config:");
     console.log("---");
-    console.log(`Report Only: ${config.reportOnly?.toString() ?? "<not set>"}`);
-    console.log(`Report URI: ${config.reportUri?.toString() ?? "<not set>"}`);
-    console.log(`Unsafe Eval: ${config.unsafeEval?.toString() ?? "<not set>"}`);
-    console.log(`Path: ${config.path.join(", ")}`);
-    console.log(
-      `Excluded Path: ${config.excludedPath?.join(", ") ?? "<not set>"}`,
-    );
+    console.log(`Report Only: ${config.reportOnly}`);
+    console.log(`Report URI: ${config.reportUri}`);
+    console.log(`Unsafe Eval: ${config.unsafeEval}`);
+    console.log(`Path: ${config.path?.join(", ")}`);
+    console.log(`Excluded Path: ${config.excludedPath?.join(", ")}`);
     console.log("---");
 
     const newOpts = {
@@ -123,12 +122,17 @@ extension.addBuildEventHandler(
     };
 
     return onPreBuild(newOpts);
-  },
+  }
 );
 
-extension.addBuildEventContext(({ site_config }) => {
-  // FIXME(ndhoule): I don't know if this lint check is correct or if the type here is incorrect, so
-  // leaving this to be safe.
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  return Promise.resolve(site_config.config ?? undefined);
+extension.addBuildEventContext(async ({ site_config }) => {
+  return site_config.config ?? undefined;
 });
+
+type EventQueryStringParameters = {
+  siteId?: string;
+  teamId?: string;
+  [key: string]: string | undefined;
+};
+
+export { extension };
