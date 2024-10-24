@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@netlify/plugin-csp-nonce": "^1.2.9",
-    "@netlify/sdk": "^1.5.0",
+    "@netlify/sdk": "^1.67.0",
     "typescript": "^5.1.6"
   }
 }
