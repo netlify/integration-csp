@@ -198,7 +198,7 @@ integration.addApiHandler(
 integration.addApiHandler(
   "enable-build",
   async (_, { client, siteId, teamId }) => {
-    const { token } = await client.generateBuildToken(siteId, teamId);
+    const { token } = await client.generateBuildToken(siteId);
     await client.setBuildToken(teamId, siteId, token);
     await client.enableBuildEventHandlers(siteId);
 
@@ -241,30 +241,31 @@ integration.addApiHandler(
   },
 );
 
-integration.onDisable(async ({ queryStringParameters }, { client }) => {
-  const { siteId, teamId } = queryStringParameters;
+// Commenting this out to allow for default onDisable behaviour
+// integration.onDisable(async ({ queryStringParameters }, { client }) => {
+//   const { siteId, teamId } = queryStringParameters;
 
-  const {
-    config: { buildHook },
-  } = await client.getSiteIntegration(siteId);
+//   const {
+//     config: { buildHook },
+//   } = await client.getSiteIntegration(siteId);
 
-  try {
-    const { id: buildHookId } = buildHook ?? {};
+//   try {
+//     const { id: buildHookId } = buildHook ?? {};
 
-    if (buildHookId) {
-      await client.disableBuildEventHandlers(siteId);
-      await client.removeBuildToken(teamId, siteId);
+//     if (buildHookId) {
+//       await client.disableBuildEventHandlers(siteId);
+//       await client.removeBuildToken(teamId, siteId);
 
-      await client.deleteBuildHook(siteId, buildHookId);
-    }
-  } catch (e) {
-    console.log("Failed to disable buildhooks");
-    console.error(e);
-  }
+//       await client.deleteBuildHook(siteId, buildHookId);
+//     }
+//   } catch (e) {
+//     console.log("Failed to disable buildhooks");
+//     console.error(e);
+//   }
 
-  return {
-    statusCode: 200,
-  };
-});
+//   return {
+//     statusCode: 200,
+//   };
+// });
 
 export { integration };
