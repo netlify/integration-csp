@@ -1,9 +1,4 @@
-*.tsbuildinfo
-.DS_Store
-.cache/
-.eslintcache
-.netlify/
-.ntli/
-.vscode/
-dev-model.gql
-node_modules/
+# Local Netlify folder
+.netlify
+node_modules
+.ntli
